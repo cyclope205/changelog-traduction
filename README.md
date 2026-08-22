@@ -1,6 +1,9 @@
 # Changelog Traduction
 
-A Home Assistant custom integration that watches your `update.*` entities and, when an update becomes available, fetches its real release notes and has an AI Task entity translate/summarize them into your language - delivered as a persistent notification and/or a mobile push notification.
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/cyclope205)
+[![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)
+
+A Home Assistant custom integration that watches your `update.*` entities and, when an update becomes available, fetches its real release notes and has an AI Task entity translate/summarize them into your language — delivered as a persistent notification and/or a mobile push notification.
 
 *[Français ci-dessous](#français)*
 
@@ -15,8 +18,8 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
   - **GitHub-hosted integrations (most HACS repos):** via the public GitHub Releases API.
   - **Supervisor add-ons:** via Supervisor's own changelog endpoint (the same one the HA frontend uses internally).
   - **Home Assistant Core:** its release-notes web page is fetched and handed to the AI, which extracts the relevant content itself.
-  - If none of these yield anything, a plain "update available" notice is sent - never invented content.
-- Translates/summarizes the result with your configured AI Task entity (e.g. Google Generative AI), in **your** language - by default Home Assistant's own interface language (`hass.config.language`), or a language you pick explicitly in the config screen.
+  - If none of these yield anything, a plain "update available" notice is sent — never invented content.
+- Translates/summarizes the result with your configured AI Task entity (e.g. Google Generative AI), in **your** language — by default Home Assistant's own interface language (`hass.config.language`), or a language you pick explicitly in the config screen.
 - Sends the result as a persistent notification and/or a push notification to the device you choose.
 - Notifies once per version (tracked internally), so no repeat spam on every HA restart.
 
@@ -42,23 +45,23 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 ### Installation
 
 **Via HACS (custom repository):**
-1. HACS -> menu -> Custom repositories -> add this repository's URL, category "Integration".
+1. HACS → ⋮ menu → Custom repositories → add this repository's URL, category "Integration".
 2. Install "Changelog Traduction", restart Home Assistant.
-3. Settings -> Devices & services -> Add integration -> search "Changelog Traduction".
+3. Settings → Devices & services → Add integration → search "Changelog Traduction".
 4. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
-2. Restart Home Assistant (a full restart - reloading the integration alone won't pick up new files).
+2. Restart Home Assistant (a full restart — reloading the integration alone won't pick up new files).
 3. Add the integration as above.
 
 ### Known limitations
 
-- Add-on changelog access relies on an internal, undocumented part of the `hassio` integration - if a future HA release changes it, this simply falls back to the generic message, without breaking anything else.
+- Add-on changelog access relies on an internal, undocumented part of the `hassio` integration — if a future HA release changes it, this simply falls back to the generic message, without breaking anything else.
 - Home Assistant Core's release notes come from a general web page (not a per-version API), so extraction quality depends on the AI correctly ignoring navigation/footer noise.
 - The public GitHub API is rate-limited to 60 requests/hour without authentication.
 - Only a handful of languages have hand-written fallback strings (used only when translation itself fails); everything else defaults to English for those specific strings. The AI-generated translations themselves work in any language you configure.
-- Single config entry only; no reconfigure screen yet - change settings by removing and re-adding the integration.
+- Single config entry only; no reconfigure screen yet — change settings by removing and re-adding the integration.
 
 ### License
 
@@ -75,8 +78,8 @@ See [LICENSE](LICENSE).
   - **Intégrations hébergées sur GitHub (la plupart des dépôts HACS) :** via l'API publique GitHub Releases.
   - **Add-ons Supervisor :** via le point d'accès changelog interne de Supervisor (le même qu'utilise l'interface HA).
   - **Home Assistant Core :** sa page web de notes de version est récupérée puis confiée à l'IA, qui en extrait elle-même le contenu pertinent.
-  - Si aucune de ces sources ne donne de résultat, un simple message "mise à jour disponible" est envoyé - jamais de contenu inventé.
-- Traduit/résume le résultat via ton entité AI Task configurée (ex : Google Generative AI), dans **ta** langue - par défaut celle de l'interface Home Assistant (`hass.config.language`), ou une langue choisie explicitement dans l'écran de configuration.
+  - Si aucune de ces sources ne donne de résultat, un simple message "mise à jour disponible" est envoyé — jamais de contenu inventé.
+- Traduit/résume le résultat via ton entité AI Task configurée (ex : Google Generative AI), dans **ta** langue — par défaut celle de l'interface Home Assistant (`hass.config.language`), ou une langue choisie explicitement dans l'écran de configuration.
 - Envoie le résultat en notification persistante et/ou notification push vers l'appareil de ton choix.
 - Ne notifie qu'une fois par version (suivi en interne), donc pas de spam à chaque redémarrage de HA.
 
@@ -102,9 +105,9 @@ See [LICENSE](LICENSE).
 ### Installation
 
 **Via HACS (dépôt personnalisé) :**
-1. HACS -> menu -> Dépôts personnalisés -> ajoute l'URL de ce dépôt, catégorie "Integration".
+1. HACS → menu ⋮ → Dépôts personnalisés → ajoute l'URL de ce dépôt, catégorie "Integration".
 2. Installe "Changelog Traduction", redémarre Home Assistant.
-3. Paramètres -> Appareils et services -> Ajouter une intégration -> cherche "Changelog Traduction".
+3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
 4. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement.
 
 **Installation manuelle :**
@@ -114,11 +117,11 @@ See [LICENSE](LICENSE).
 
 ### Limites connues
 
-- L'accès aux changelogs des add-ons repose sur une partie interne et non documentée de l'intégration `hassio` - si une future version de HA la change, ça retombe simplement sur le message générique, sans casser le reste.
+- L'accès aux changelogs des add-ons repose sur une partie interne et non documentée de l'intégration `hassio` — si une future version de HA la change, ça retombe simplement sur le message générique, sans casser le reste.
 - Les notes de version de Home Assistant Core viennent d'une page web générale (pas d'une API par version), donc la qualité de l'extraction dépend de la capacité de l'IA à ignorer le bruit de navigation/pied de page.
 - L'API GitHub publique est limitée à 60 requêtes/heure sans authentification.
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
-- Une seule instance à la fois, pas encore d'écran de reconfiguration - pour changer les réglages, il faut supprimer puis réajouter l'intégration.
+- Une seule instance à la fois, pas encore d'écran de reconfiguration — pour changer les réglages, il faut supprimer puis réajouter l'intégration.
 
 ### Licence
 
