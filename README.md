@@ -22,13 +22,13 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 ### Screenshots
 
-**1. Configure the integration**
-
-![Setup screen](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
-
-**2. Custom icon shown in Home Assistant**
+**1. Custom icon shown in Home Assistant**
 
 ![Brand icon picker](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
+
+**2. Configure the integration**
+
+![Setup screen](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
 
 **3. Translated notifications**
 
@@ -82,13 +82,13 @@ See [LICENSE](LICENSE).
 
 ### Captures d'écran
 
-**1. Configuration de l'intégration**
-
-![Écran de configuration](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
-
-**2. Icône personnalisée affichée dans Home Assistant**
+**1. Icône personnalisée affichée dans Home Assistant**
 
 ![Icône dans le sélecteur de marque](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
+
+**2. Configuration de l'intégration**
+
+![Écran de configuration](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
 
 **3. Notifications traduites**
 
