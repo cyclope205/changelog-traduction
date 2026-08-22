@@ -64,6 +64,12 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 2. Restart Home Assistant (a full restart — reloading the integration alone won't pick up new files).
 3. Add the integration as above.
 
+### Privacy
+
+- This integration is read-only: it never installs updates, never touches your configuration, and never controls any device.
+- The release notes text (fetched from GitHub, Supervisor, or the Home Assistant release-notes page) is sent to whichever **AI Task entity you configured** so it can translate/summarize it. Depending on the provider you chose (Google Gemini, OpenAI, a local Ollama model, etc.), that text may leave your Home Assistant instance to reach that provider's servers — the same way it would for any automation you build with that AI Task entity.
+- Nothing is sent anywhere if there is no pending update, and no other data (entities, history, personal information) is ever included.
+
 ### Known limitations
 
 - Add-on changelog access relies on an internal, undocumented part of the `hassio` integration — if a future HA release changes it, this simply falls back to the generic message, without breaking anything else.
@@ -132,6 +138,12 @@ See [LICENSE](LICENSE).
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
 2. Redémarre complètement Home Assistant (un simple rechargement de l'intégration ne suffit pas pour prendre en compte de nouveaux fichiers).
 3. Ajoute l'intégration comme ci-dessus.
+
+### Confidentialité
+
+- Cette intégration est en lecture seule : elle n'installe jamais de mise à jour, ne touche jamais à ta configuration, et ne contrôle aucun appareil.
+- Le texte des notes de version (récupéré depuis GitHub, Supervisor, ou la page de notes de version de Home Assistant) est envoyé à **l'entité AI Task que tu as configurée** pour qu'elle le traduise/résume. Selon le fournisseur choisi (Google Gemini, OpenAI, un modèle Ollama local, etc.), ce texte peut quitter ton instance Home Assistant pour rejoindre les serveurs de ce fournisseur — exactement comme pour n'importe quelle automatisation utilisant cette même entité AI Task.
+- Rien n'est envoyé s'il n'y a pas de mise à jour en attente, et aucune autre donnée (entités, historique, informations personnelles) n'est jamais incluse.
 
 ### Limites connues
 
