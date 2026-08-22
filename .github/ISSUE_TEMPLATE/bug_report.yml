@@ -1,0 +1,54 @@
+name: Bug report
+description: Report something that isn't working as expected / Signaler un bug
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! You can write in English or French.
+        Merci de prendre le temps de signaler un bug ! Tu peux écrire en français ou en anglais.
+
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: e.g. 2026.8.3
+    validations:
+      required: true
+
+  - type: input
+    id: integration_version
+    attributes:
+      label: Changelog Traduction version
+      description: Found in Settings → Devices & services → Changelog Traduction, or in manifest.json.
+      placeholder: e.g. 2.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: ai_provider
+    attributes:
+      label: AI Task provider used
+      placeholder: e.g. Google Gemini, OpenAI, Ollama
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened? / Que s'est-il passé ?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: >-
+        Enable debug logging for custom_components.changelog_traduction
+        (Settings → System → Logs, or via configuration.yaml logger config)
+        and paste the relevant lines here.
+      render: shell
+    validations:
+      required: false
