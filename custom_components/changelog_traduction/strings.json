@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Changelog Traduction",
+        "description": "Automatically translates and summarizes the release notes of available updates (HACS integrations, Supervisor add-ons, Home Assistant Core). Requires an AI Task integration (e.g. Google Generative AI) to already be installed and configured - without it, translation cannot work.",
+        "data": {
+          "notify_service": "Notification entities (pick one or more, e.g. your phone and your tablet)",
+          "ai_task_entity": "AI Task entity used for translation (requires an AI integration already configured, e.g. Google Generative AI)",
+          "language": "Target language (leave empty to use Home Assistant's own interface language)",
+          "use_persistent_notification": "Create a persistent notification in Home Assistant",
+          "use_mobile_notification": "Also send a mobile notification"
+        }
+      }
+    },
+    "error": {
+      "no_ai_task_entity": "No AI Task entity found. Install and configure an AI integration first (e.g. Google Generative AI) that exposes an ai_task entity, then come back here."
+    }
+  }
+}
