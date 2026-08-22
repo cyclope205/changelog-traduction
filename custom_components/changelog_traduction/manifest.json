@@ -1,0 +1,12 @@
+{
+    "domain": "changelog_traduction",
+    "name": "Changelog Traduction",
+    "version": "2.0.0",
+    "config_flow": true,
+    "single_config_entry": true,
+    "documentation": "https://github.com/cyclope205/changelog-traduction",
+    "issue_tracker": "https://github.com/cyclope205/changelog-traduction/issues",
+    "iot_class": "cloud_polling",
+    "requirements": [],
+    "codeowners": ["@cyclope205"]
+}
