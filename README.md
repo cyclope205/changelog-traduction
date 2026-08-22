@@ -39,8 +39,17 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 ### Requirements
 
-- An **AI Task** entity already configured (e.g. Google Generative AI, or any other AI Task provider).
+- An **AI Task** entity already configured (e.g. Google Gemini, OpenAI, Ollama, or any other AI Task provider).
 - [HACS](https://hacs.xyz) installed (recommended), or manual installation.
+
+<details>
+<summary>Don't have an AI Task entity yet? Quick free setup with Google Gemini</summary>
+
+1. Get a free API key at [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
+2. In Home Assistant: **Settings → Devices & services → Add integration → "Google Gemini"**, paste the key.
+3. If no AI Task entity shows up automatically, open the integration card's **⋮ menu → Add entry** and add one.
+
+</details>
 
 ### Installation
 
@@ -99,8 +108,17 @@ See [LICENSE](LICENSE).
 
 ### Prérequis
 
-- Une entité **AI Task** déjà configurée (ex : Google Generative AI, ou tout autre fournisseur AI Task).
+- Une entité **AI Task** déjà configurée (ex : Google Gemini, OpenAI, Ollama, ou tout autre fournisseur AI Task).
 - [HACS](https://hacs.xyz) installé (recommandé), ou installation manuelle.
+
+<details>
+<summary>Pas encore d'entité AI Task ? Configuration rapide et gratuite avec Google Gemini</summary>
+
+1. Récupère une clé API gratuite sur [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
+2. Dans Home Assistant : **Paramètres → Appareils et services → Ajouter une intégration → "Google Gemini"**, colle la clé.
+3. Si aucune entité AI Task n'apparaît automatiquement, ouvre le menu **⋮ → Ajouter une entrée** sur la carte de l'intégration et ajoutes-en une.
+
+</details>
 
 ### Installation
 
