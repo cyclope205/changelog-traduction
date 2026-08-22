@@ -253,6 +253,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Called when the config entry is fully removed (not on unload/reload).
+
+    Deletes the "already notified" storage file so that a future reinstall
+    starts clean instead of silently inheriting stale version bookkeeping
+    from a previous install, and so nothing lingers in .storage/ once the
+    integration itself has been removed.
+    """
+    store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
+    await store.async_remove()
+
+
 async def _fetch_github_release_body(hass: HomeAssistant, match: re.Match) -> str | None:
     """Fetch a GitHub release's body text via the public REST API."""
     owner, repo, tag = match.group("owner"), match.group("repo"), match.group("tag")
