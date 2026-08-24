@@ -1,5 +1,21 @@
 # Changelog Traduction
 
+<table>
+<tr>
+<td>
+
+[![release](https://img.shields.io/github/v/release/cyclope205/changelog-traduction?label=release&color=blue)](https://github.com/cyclope205/changelog-traduction/releases)
+[![build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
+[![license](https://img.shields.io/github/license/cyclope205/changelog-traduction?color=green)](LICENSE)
+[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+
+</td>
+<td width="110" align="right">
+<img src="custom_components/changelog_traduction/brand/logo.png" width="90" alt="logo">
+</td>
+</tr>
+</table>
+
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/cyclope205)
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)
 
