@@ -41,17 +41,26 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 ### Screenshots
 
-**1. Custom icon shown in Home Assistant**
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**1. Look for the integration under Devices and Services**
 
 ![Brand icon picker](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configure the integration**
 
-![Setup screen](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
+<img width="1332" height="813" alt="Capture d&#39;écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" />
 
-**3. Translated notifications**
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**3. Native Home Assistant notifications**
 
-![Translated notifications](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131625.png)
+<img width="411" height="287" alt="Capture d&#39;écran 2026-08-26 231139" src="https://github.com/user-attachments/assets/f26b3c88-221a-4e76-816e-c64574478875" />
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**4. Detailed notifications by Changelog Traduction**
+
+<img width="406" height="395" alt="Capture d&#39;écran 2026-08-26 231217" src="https://github.com/user-attachments/assets/18d4d24f-5165-448b-9c5c-3b3ef5b65ac1" />
+
 
 ### Requirements
 
@@ -116,17 +125,27 @@ See [LICENSE](LICENSE).
 
 ### Captures d'écran
 
-**1. Icône personnalisée affichée dans Home Assistant**
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**1. Integration a chercher dans appareils et services**
 
 ![Icône dans le sélecteur de marque](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configuration de l'intégration**
 
 ![Écran de configuration](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
 
-**3. Notifications traduites**
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**3. Notifications natives Home Assistant**
 
-![Notifications traduites](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131625.png)
+<img width="411" height="287" alt="Capture d&#39;écran 2026-08-26 231139" src="https://github.com/user-attachments/assets/d2ab075d-5147-43d7-9ae9-19b707f2b90b" />
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**4. Notifications détaillées par Changelog Traduction**
+
+<img width="406" height="395" alt="Capture d&#39;écran 2026-08-26 231217" src="https://github.com/user-attachments/assets/f17567a7-dbbb-4c1f-85ec-8f8837276f51" />
+
+
 
 ### Prérequis
 
