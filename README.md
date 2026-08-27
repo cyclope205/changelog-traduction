@@ -39,9 +39,9 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 - Sends the result as a persistent notification and/or a push notification to the device you choose.
 - Notifies once per version (tracked internally), so no repeat spam on every HA restart.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Screenshots
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **1. Look for the integration under Devices and Services**
 
 ![Brand icon picker](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
@@ -54,13 +54,14 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Native Home Assistant notifications**
 
-<img width="411" height="287" alt="Capture d&#39;écran 2026-08-26 231139" src="https://github.com/user-attachments/assets/f26b3c88-221a-4e76-816e-c64574478875" />
+<img width="1320" height="850" alt="image" src="https://github.com/user-attachments/assets/d099856e-c1be-468a-ba2f-d8bef88653c6" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **4. Detailed notifications by Changelog Traduction**
 
-<img width="406" height="395" alt="Capture d&#39;écran 2026-08-26 231217" src="https://github.com/user-attachments/assets/18d4d24f-5165-448b-9c5c-3b3ef5b65ac1" />
+<img width="1298" height="1179" alt="image" src="https://github.com/user-attachments/assets/8ae13b2e-d811-4a9b-9a94-bc1076051a0d" />
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Requirements
 
@@ -76,6 +77,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 </details>
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Installation
 
 **Via HACS (custom repository):**
@@ -88,13 +90,15 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
 2. Restart Home Assistant (a full restart — reloading the integration alone won't pick up new files).
 3. Add the integration as above.
-
+   
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------  
 ### Privacy
 
 - This integration is read-only: it never installs updates, never touches your configuration, and never controls any device.
 - The release notes text (fetched from GitHub, Supervisor, or the Home Assistant release-notes page) is sent to whichever **AI Task entity you configured** so it can translate/summarize it. Depending on the provider you chose (Google Gemini, OpenAI, a local Ollama model, etc.), that text may leave your Home Assistant instance to reach that provider's servers — the same way it would for any automation you build with that AI Task entity.
 - Nothing is sent anywhere if there is no pending update, and no other data (entities, history, personal information) is ever included.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Known limitations
 
 - Add-on changelog access relies on an internal, undocumented part of the `hassio` integration — if a future HA release changes it, this simply falls back to the generic message, without breaking anything else.
@@ -103,6 +107,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 - Only a handful of languages have hand-written fallback strings (used only when translation itself fails); everything else defaults to English for those specific strings. The AI-generated translations themselves work in any language you configure.
 - Single config entry only; no reconfigure screen yet — change settings by removing and re-adding the integration.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### License
 
 See [LICENSE](LICENSE).
@@ -122,10 +127,10 @@ See [LICENSE](LICENSE).
 - Traduit/résume le résultat via ton entité AI Task configurée (ex : Google Generative AI), dans **ta** langue — par défaut celle de l'interface Home Assistant (`hass.config.language`), ou une langue choisie explicitement dans l'écran de configuration.
 - Envoie le résultat en notification persistante et/ou notification push vers l'appareil de ton choix.
 - Ne notifie qu'une fois par version (suivi en interne), donc pas de spam à chaque redémarrage de HA.
-
+  
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Captures d'écran
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **1. Integration a chercher dans appareils et services**
 
 ![Icône dans le sélecteur de marque](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
@@ -145,8 +150,7 @@ See [LICENSE](LICENSE).
 
 <img width="406" height="395" alt="Capture d&#39;écran 2026-08-26 231217" src="https://github.com/user-attachments/assets/f17567a7-dbbb-4c1f-85ec-8f8837276f51" />
 
-
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Prérequis
 
 - Une entité **AI Task** déjà configurée (ex : Google Gemini, OpenAI, Ollama, ou tout autre fournisseur AI Task).
@@ -161,6 +165,7 @@ See [LICENSE](LICENSE).
 
 </details>
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Installation
 
 **Via HACS (dépôt personnalisé) :**
@@ -174,12 +179,14 @@ See [LICENSE](LICENSE).
 2. Redémarre complètement Home Assistant (un simple rechargement de l'intégration ne suffit pas pour prendre en compte de nouveaux fichiers).
 3. Ajoute l'intégration comme ci-dessus.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Confidentialité
 
 - Cette intégration est en lecture seule : elle n'installe jamais de mise à jour, ne touche jamais à ta configuration, et ne contrôle aucun appareil.
 - Le texte des notes de version (récupéré depuis GitHub, Supervisor, ou la page de notes de version de Home Assistant) est envoyé à **l'entité AI Task que tu as configurée** pour qu'elle le traduise/résume. Selon le fournisseur choisi (Google Gemini, OpenAI, un modèle Ollama local, etc.), ce texte peut quitter ton instance Home Assistant pour rejoindre les serveurs de ce fournisseur — exactement comme pour n'importe quelle automatisation utilisant cette même entité AI Task.
 - Rien n'est envoyé s'il n'y a pas de mise à jour en attente, et aucune autre donnée (entités, historique, informations personnelles) n'est jamais incluse.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Limites connues
 
 - L'accès aux changelogs des add-ons repose sur une partie interne et non documentée de l'intégration `hassio` — si une future version de HA la change, ça retombe simplement sur le message générique, sans casser le reste.
@@ -188,6 +195,7 @@ See [LICENSE](LICENSE).
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
 - Une seule instance à la fois, pas encore d'écran de reconfiguration — pour changer les réglages, il faut supprimer puis réajouter l'intégration.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Licence
 
 Voir [LICENSE](LICENSE).
