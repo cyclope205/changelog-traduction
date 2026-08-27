@@ -54,12 +54,12 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Native Home Assistant notifications**
 
-<img width="1320" height="850" alt="image" src="https://github.com/user-attachments/assets/d099856e-c1be-468a-ba2f-d8bef88653c6" />
+<img width="1320" height="850" alt="IMG_7120" src="https://github.com/user-attachments/assets/075afe04-1fef-4f2e-bd43-4b0fc38da897" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **4. Detailed notifications by Changelog Traduction**
 
-<img width="1298" height="1179" alt="image" src="https://github.com/user-attachments/assets/8ae13b2e-d811-4a9b-9a94-bc1076051a0d" />
+<img width="1298" height="1179" alt="IMG_7121" src="https://github.com/user-attachments/assets/7dc8f288-38c3-4510-b690-70ea7545f7ad" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
