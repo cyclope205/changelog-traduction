@@ -44,7 +44,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 **1. Look for the integration under Devices and Services**
 
-![Brand icon picker](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
+<img width="727" height="292" alt="Capture d&#39;écran 2026-08-27 102305" src="https://github.com/user-attachments/assets/fcdd0ebc-1356-4667-b640-7c6de0cd6137" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configure the integration**
@@ -133,22 +133,22 @@ See [LICENSE](LICENSE).
 
 **1. Integration a chercher dans appareils et services**
 
-![Icône dans le sélecteur de marque](screenshots/Capture%20d%C3%A9cran%2020260822%20131216.png)
+<img width="727" height="292" alt="image" src="https://github.com/user-attachments/assets/290706e7-dee2-4523-b8cd-2634578202b8" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configuration de l'intégration**
 
-![Écran de configuration](screenshots/Capture%20d'%C3%A9cran%202026-08-22%20131250.png)
+<img width="727" height="771" alt="image" src="https://github.com/user-attachments/assets/9dd24406-c0b7-4752-ac3d-bf943cd33b19" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Notifications natives Home Assistant**
 
-<img width="411" height="287" alt="Capture d&#39;écran 2026-08-26 231139" src="https://github.com/user-attachments/assets/d2ab075d-5147-43d7-9ae9-19b707f2b90b" />
+<img width="390" height="290" alt="image" src="https://github.com/user-attachments/assets/279fcc77-280b-4e78-a852-ff2c7fa26834" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **4. Notifications détaillées par Changelog Traduction**
 
-<img width="406" height="395" alt="Capture d&#39;écran 2026-08-26 231217" src="https://github.com/user-attachments/assets/f17567a7-dbbb-4c1f-85ec-8f8837276f51" />
+<img width="390" height="292" alt="image" src="https://github.com/user-attachments/assets/24330d5d-e3c8-45a3-bcdd-71d3d031bbd0" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Prérequis
