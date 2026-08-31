@@ -38,6 +38,8 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 - Translates/summarizes the result with your configured AI Task entity (e.g. Google Generative AI), in **your** language — by default Home Assistant's own interface language (`hass.config.language`), or a language you pick explicitly in the config screen.
 - Sends the result as a persistent notification and/or a push notification to the device you choose.
 - Notifies once per version (tracked internally), so no repeat spam on every HA restart.
+- Optional **alert mode**: only notify when a release contains breaking changes (renamed/removed entities or services, required configuration migrations...), as classified by the AI, instead of translating/summarizing every update.
+- All settings can be changed at any time from the integration's **Configure** option, no need to remove and re-add it.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Screenshots
@@ -84,7 +86,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 1. HACS → ⋮ menu → Custom repositories → add this repository's URL, category "Integration".
 2. Install "Changelog Traduction", restart Home Assistant.
 3. Settings → Devices & services → Add integration → search "Changelog Traduction".
-4. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly.
+4. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
@@ -105,7 +107,6 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 - Home Assistant Core's release notes come from a general web page (not a per-version API), so extraction quality depends on the AI correctly ignoring navigation/footer noise.
 - The public GitHub API is rate-limited to 60 requests/hour without authentication.
 - Only a handful of languages have hand-written fallback strings (used only when translation itself fails); everything else defaults to English for those specific strings. The AI-generated translations themselves work in any language you configure.
-- Single config entry only; no reconfigure screen yet — change settings by removing and re-adding the integration.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### License
@@ -127,6 +128,8 @@ See [LICENSE](LICENSE).
 - Traduit/résume le résultat via ton entité AI Task configurée (ex : Google Generative AI), dans **ta** langue — par défaut celle de l'interface Home Assistant (`hass.config.language`), ou une langue choisie explicitement dans l'écran de configuration.
 - Envoie le résultat en notification persistante et/ou notification push vers l'appareil de ton choix.
 - Ne notifie qu'une fois par version (suivi en interne), donc pas de spam à chaque redémarrage de HA.
+- Mode **alerte** optionnel : ne notifie que si une version contient des changements majeurs (entités/services renommés ou supprimés, migration de configuration requise...), classés par l'IA, au lieu de traduire/résumer systématiquement chaque mise à jour.
+- Tous les réglages peuvent être modifiés à tout moment depuis l'option **Configurer** de l'intégration, sans avoir à la supprimer/réinstaller.
   
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Captures d'écran
@@ -172,7 +175,7 @@ See [LICENSE](LICENSE).
 1. HACS → menu ⋮ → Dépôts personnalisés → ajoute l'URL de ce dépôt, catégorie "Integration".
 2. Installe "Changelog Traduction", redémarre Home Assistant.
 3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
-4. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement.
+4. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
 
 **Installation manuelle :**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
@@ -193,7 +196,6 @@ See [LICENSE](LICENSE).
 - Les notes de version de Home Assistant Core viennent d'une page web générale (pas d'une API par version), donc la qualité de l'extraction dépend de la capacité de l'IA à ignorer le bruit de navigation/pied de page.
 - L'API GitHub publique est limitée à 60 requêtes/heure sans authentification.
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
-- Une seule instance à la fois, pas encore d'écran de reconfiguration — pour changer les réglages, il faut supprimer puis réajouter l'intégration.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Licence
