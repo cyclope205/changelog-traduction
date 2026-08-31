@@ -53,6 +53,8 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 <img width="1332" height="813" alt="Capture d&#39;écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" />
 
+<img width="716" height="701" alt="Capture d&#39;écran 2026-08-31 104013" src="https://github.com/user-attachments/assets/89cf4017-2699-4d89-b32e-9cae4e18773e" />
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Native Home Assistant notifications**
 
@@ -142,6 +144,8 @@ See [LICENSE](LICENSE).
 **2. Configuration de l'intégration**
 
 <img width="727" height="771" alt="image" src="https://github.com/user-attachments/assets/9dd24406-c0b7-4752-ac3d-bf943cd33b19" />
+
+<img width="730" height="776" alt="Capture d&#39;écran 2026-08-31 103333" src="https://github.com/user-attachments/assets/794b86dd-79b1-4cb6-aa6a-ed09afc7c422" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Notifications natives Home Assistant**
