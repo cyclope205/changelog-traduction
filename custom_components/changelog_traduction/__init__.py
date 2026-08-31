@@ -126,7 +126,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Changelog Traduction from a config entry."""
     store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     notified: dict[str, str] = await store.async_load() or {}
-    options: dict[str, Any] = dict(entry.data)
+    # entry.options overrides entry.data field-by-field once the options
+    # flow has been submitted at least once; before that, entry.data (the
+    # original setup values) is all there is. Reloading the entry (see the
+    # update listener registered below) re-runs this function from scratch,
+    # so a settings change always takes effect immediately, no restart
+    # needed.
+    options: dict[str, Any] = {**entry.data, **entry.options}
     lang = options.get("language") or hass.config.language or "en"
 
     async def _process_state(entity_id: str, new_state: Any) -> None:
@@ -185,6 +191,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             )
         _LOGGER.debug("%s: final message=%r", entity_id, message)
 
+        if message is None:
+            # Alert mode determined this release has no breaking changes:
+            # nothing to notify, but still record the version as seen so
+            # we don't re-run the AI classification on it every refresh
+            # cycle.
+            if latest_version:
+                notified[entity_id] = latest_version
+                await store.async_save(notified)
+            return
+
         delivered = await _deliver(hass, options, title, message, lang)
         _LOGGER.debug("%s: delivered=%s", entity_id, delivered)
 
@@ -242,7 +258,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     else:
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _startup_catch_up)
 
+    # Reload the entry whenever its options change, so a setting picked in
+    # the new options flow (notification targets, AI Task entity, language,
+    # alert mode...) takes effect immediately instead of requiring a manual
+    # reload or a full restart.
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
+
     return True
+
+
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload the config entry when its options are changed."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -251,18 +278,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if remove_listener:
         remove_listener()
     return True
-
-
-async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Called when the config entry is fully removed (not on unload/reload).
-
-    Deletes the "already notified" storage file so that a future reinstall
-    starts clean instead of silently inheriting stale version bookkeeping
-    from a previous install, and so nothing lingers in .storage/ once the
-    integration itself has been removed.
-    """
-    store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
-    await store.async_remove()
 
 
 async def _fetch_github_release_body(hass: HomeAssistant, match: re.Match) -> str | None:
@@ -355,7 +370,7 @@ async def _translate_changelog(
     lang: str,
     *,
     noisy_source: bool = False,
-) -> str:
+) -> str | None:
     """Ask the configured AI Task entity to translate/summarize the changelog.
 
     Target language defaults to Home Assistant's own interface language
@@ -366,6 +381,11 @@ async def _translate_changelog(
     budget (the real content can sit well past the nav/footer boilerplate)
     and tells the model explicitly to ignore anything that isn't actual
     release notes.
+
+    When options["alert_mode_only"] is set, the AI is instead asked to
+    classify the release as breaking or not (structured output) and this
+    returns None when it judges there are no breaking changes - the caller
+    treats None as "nothing to notify about".
     """
     ai_task_entity = options.get("ai_task_entity")
     max_chars = MAX_HTML_CHANGELOG_CHARS if noisy_source else MAX_CHANGELOG_CHARS
@@ -377,6 +397,61 @@ async def _translate_changelog(
         if noisy_source
         else ""
     )
+
+    if options.get("alert_mode_only"):
+        instructions = (
+            f"Review the following release notes for the Home Assistant "
+            f"integration '{title}' and decide whether this release contains "
+            "breaking changes for a typical user: renamed or removed "
+            "entities/services, required configuration migrations, or any "
+            "other change that could break an existing automation or "
+            "dashboard. Purely internal changes (refactoring, CI, typos, "
+            "new optional features, bug fixes that don't change existing "
+            "behavior) are NOT breaking changes." + noise_hint + "\n\n"
+            f"{changelog_text[:max_chars]}"
+        )
+        structure = {
+            "has_breaking_changes": {
+                "description": "True only if this release contains breaking changes as defined above.",
+                "required": True,
+                "selector": {"boolean": {}},
+            },
+            "summary": {
+                "description": (
+                    f"If has_breaking_changes is true, a translation/summary in "
+                    f"{language_label} (3 to 5 sentences) of the breaking changes "
+                    "only. Empty string otherwise."
+                ),
+                "required": True,
+                "selector": {"text": {}},
+            },
+        }
+        try:
+            result = await hass.services.async_call(
+                "ai_task",
+                "generate_data",
+                {
+                    "task_name": "changelog breaking-change check",
+                    "instructions": instructions,
+                    "entity_id": ai_task_entity,
+                    "structure": structure,
+                },
+                blocking=True,
+                return_response=True,
+            )
+            data = result.get("data") if isinstance(result, dict) else None
+            if not isinstance(data, dict) or not data.get("has_breaking_changes"):
+                return None
+            summary = data.get("summary")
+            return (
+                str(summary).strip()
+                if summary
+                else _fallback(lang, "no_changelog", title=title, version="")
+            )
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.warning("AI Task breaking-change check failed for %s: %s", title, err)
+            return _fallback(lang, "translation_failed", title=title)
+
     instructions = (
         f"Translate and summarize, in {language_label}, in 3 to 5 sentences "
         f"maximum, the following release notes for the Home Assistant "
