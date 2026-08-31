@@ -9,7 +9,26 @@
           "ai_task_entity": "Entité AI Task utilisée pour la traduction (nécessite une intégration IA déjà configurée, ex : Google Generative AI)",
           "language": "Langue cible (laisser vide pour utiliser la langue de l'interface Home Assistant)",
           "use_persistent_notification": "Créer une notification persistante dans Home Assistant",
-          "use_mobile_notification": "Envoyer aussi une notification sur mobile"
+          "use_mobile_notification": "Envoyer aussi une notification sur mobile",
+          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)"
+        }
+      }
+    },
+    "error": {
+      "no_ai_task_entity": "Aucune entité AI Task trouvée. Installe et configure d'abord une intégration IA (ex : Google Generative AI) qui expose une entité de type ai_task, puis reviens ici."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Changelog Traduction",
+        "data": {
+          "notify_service": "Entités de notification (choisis-en une ou plusieurs, ex : ton téléphone et ta tablette)",
+          "ai_task_entity": "Entité AI Task utilisée pour la traduction (nécessite une intégration IA déjà configurée, ex : Google Generative AI)",
+          "language": "Langue cible (laisser vide pour utiliser la langue de l'interface Home Assistant)",
+          "use_persistent_notification": "Créer une notification persistante dans Home Assistant",
+          "use_mobile_notification": "Envoyer aussi une notification sur mobile",
+          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)"
         }
       }
     },
