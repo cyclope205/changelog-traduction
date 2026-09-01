@@ -88,6 +88,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 1. HACS → ⋮ menu → Custom repositories → add this repository's URL, category "Integration".
 
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+   The button above opens HACS and pre-fills this step automatically.
 3. Install "Changelog Traduction", restart Home Assistant.
 4. Settings → Devices & services → Add integration → search "Changelog Traduction".
 5. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
@@ -179,9 +180,11 @@ See [LICENSE](LICENSE).
 
 **Via HACS (dépôt personnalisé) :**
 1. HACS → menu ⋮ → Dépôts personnalisés → ajoute l'URL de ce dépôt, catégorie "Integration".
-2. Installe "Changelog Traduction", redémarre Home Assistant.
-3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
-4. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+   Le bouton ci-dessus ouvre HACS et pré-remplit cette étape automatiquement.
+3. Installe "Changelog Traduction", redémarre Home Assistant.
+4. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
+5. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
 
 **Installation manuelle :**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
