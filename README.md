@@ -86,9 +86,11 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 **Via HACS (custom repository):**
 1. HACS → ⋮ menu → Custom repositories → add this repository's URL, category "Integration".
-2. Install "Changelog Traduction", restart Home Assistant.
-3. Settings → Devices & services → Add integration → search "Changelog Traduction".
-4. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
+
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+3. Install "Changelog Traduction", restart Home Assistant.
+4. Settings → Devices & services → Add integration → search "Changelog Traduction".
+5. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
