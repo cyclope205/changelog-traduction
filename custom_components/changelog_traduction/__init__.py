@@ -137,6 +137,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def _process_state(entity_id: str, new_state: Any) -> None:
         """Process one update entity that is currently (or just became) 'on'."""
+        excluded_entities = options.get("excluded_entities") or []
+        if entity_id in excluded_entities:
+            # User explicitly asked to never be notified about this entity
+            # (e.g. Spook Blueprint update trackers with no real release
+            # notes) - skip before doing any network/AI work at all, and
+            # don't record it as "notified" either, so re-including it
+            # later picks the version back up normally.
+            _LOGGER.debug("Skipping %s: excluded by user configuration", entity_id)
+            return
+
         latest_version = new_state.attributes.get("latest_version")
         release_url = new_state.attributes.get("release_url") or ""
         entity_picture = new_state.attributes.get("entity_picture") or ""
