@@ -1,13 +1,17 @@
 {
   "domain": "changelog_traduction",
   "name": "Changelog Traduction",
-  "after_dependencies": ["hassio"],
-  "codeowners": ["@cyclope205"],
+  "after_dependencies": [
+    "hassio"
+  ],
+  "codeowners": [
+    "@cyclope205"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/cyclope205/changelog-traduction",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/cyclope205/changelog-traduction/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "2.1.2"
+  "version": "2.1.3"
 }
