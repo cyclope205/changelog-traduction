@@ -10,7 +10,8 @@
           "language": "Target language (leave empty to use Home Assistant's own interface language)",
           "use_persistent_notification": "Create a persistent notification in Home Assistant",
           "use_mobile_notification": "Also send a mobile notification",
-          "alert_mode_only": "Alert mode: only notify when a release contains breaking changes (as classified by the AI)"
+          "alert_mode_only": "Alert mode: only notify when a release contains breaking changes (as classified by the AI)",
+          "excluded_entities": "Entities to always ignore (pick specific update.* entities that should never trigger a notification, e.g. Spook's Blueprint update trackers with no real release notes)"
         }
       }
     },
@@ -28,7 +29,8 @@
           "language": "Target language (leave empty to use Home Assistant's own interface language)",
           "use_persistent_notification": "Create a persistent notification in Home Assistant",
           "use_mobile_notification": "Also send a mobile notification",
-          "alert_mode_only": "Alert mode: only notify when a release contains breaking changes (as classified by the AI)"
+          "alert_mode_only": "Alert mode: only notify when a release contains breaking changes (as classified by the AI)",
+          "excluded_entities": "Entities to always ignore (pick specific update.* entities that should never trigger a notification, e.g. Spook's Blueprint update trackers with no real release notes)"
         }
       }
     },
