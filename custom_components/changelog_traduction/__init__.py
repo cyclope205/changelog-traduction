@@ -184,6 +184,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             message = await _translate_changelog(
                 hass, options, title, changelog_text, lang, noisy_source=noisy_source
             )
+        elif options.get("alert_mode_only"):
+            # Alert mode is meant to keep notifications to what matters. With no
+            # changelog text at all there's nothing to classify as breaking or
+            # not, so treat it the same as "not breaking": skip the notification
+            # instead of sending a content-free "update available, no notes"
+            # message every time (e.g. Blueprint update entities tracked only by
+            # raw file hash, which have no real release notes).
+            message = None
         else:
             message = _fallback(
                 lang, "no_changelog", title=title,
