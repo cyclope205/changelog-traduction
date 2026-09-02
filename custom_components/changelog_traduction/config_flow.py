@@ -74,6 +74,15 @@ class ChangelogTraductionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 # default so existing behaviour (translate/summarize every
                 # update) is unchanged unless explicitly opted into.
                 vol.Optional("alert_mode_only", default=False): bool,
+                # Per-entity exclude list: specific update.* entities that
+                # should NEVER trigger a notification, no matter what alert
+                # mode decides - e.g. Spook's Blueprint update trackers,
+                # which only track a raw file hash and have no real release
+                # notes to classify in the first place. Empty by default so
+                # nothing is silenced unless explicitly opted into.
+                vol.Optional("excluded_entities", default=[]): selector.selector(
+                    {"entity": {"filter": [{"domain": "update"}], "multiple": True}}
+                ),
             }
         )
         return self.async_show_form(
@@ -136,6 +145,12 @@ class ChangelogTraductionOptionsFlow(config_entries.OptionsFlow):
                     "alert_mode_only",
                     default=current.get("alert_mode_only", False),
                 ): bool,
+                vol.Optional(
+                    "excluded_entities",
+                    default=current.get("excluded_entities", []),
+                ): selector.selector(
+                    {"entity": {"filter": [{"domain": "update"}], "multiple": True}}
+                ),
             }
         )
         return self.async_show_form(
