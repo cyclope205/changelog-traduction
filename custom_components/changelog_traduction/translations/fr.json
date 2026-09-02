@@ -10,7 +10,8 @@
           "language": "Langue cible (laisser vide pour utiliser la langue de l'interface Home Assistant)",
           "use_persistent_notification": "Créer une notification persistante dans Home Assistant",
           "use_mobile_notification": "Envoyer aussi une notification sur mobile",
-          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)"
+          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)",
+          "excluded_entities": "Entités à toujours ignorer (choisis des entités update.* précises qui ne déclencheront jamais de notification, ex : les entités de suivi Blueprint de Spook, qui n'ont pas de vraies notes de version)"
         }
       }
     },
@@ -28,7 +29,8 @@
           "language": "Langue cible (laisser vide pour utiliser la langue de l'interface Home Assistant)",
           "use_persistent_notification": "Créer une notification persistante dans Home Assistant",
           "use_mobile_notification": "Envoyer aussi une notification sur mobile",
-          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)"
+          "alert_mode_only": "Mode alerte : ne notifier que si une version contient des changements majeurs (classés par l'IA)",
+          "excluded_entities": "Entités à toujours ignorer (choisis des entités update.* précises qui ne déclencheront jamais de notification, ex : les entités de suivi Blueprint de Spook, qui n'ont pas de vraies notes de version)"
         }
       }
     },
