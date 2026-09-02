@@ -39,6 +39,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 - Sends the result as a persistent notification and/or a push notification to the device you choose.
 - Notifies once per version (tracked internally), so no repeat spam on every HA restart.
 - Optional **alert mode**: only notify when a release contains breaking changes (renamed/removed entities or services, required configuration migrations...), as classified by the AI, instead of translating/summarizing every update.
+- Optional **per-entity exclude list**: pick specific `update.*` entities (e.g. Spook's Blueprint update trackers, which have no real release notes) that should never trigger a notification at all, regardless of alert mode.
 - All settings can be changed at any time from the integration's **Configure** option, no need to remove and re-add it.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -134,6 +135,7 @@ See [LICENSE](LICENSE).
 - Envoie le résultat en notification persistante et/ou notification push vers l'appareil de ton choix.
 - Ne notifie qu'une fois par version (suivi en interne), donc pas de spam à chaque redémarrage de HA.
 - Mode **alerte** optionnel : ne notifie que si une version contient des changements majeurs (entités/services renommés ou supprimés, migration de configuration requise...), classés par l'IA, au lieu de traduire/résumer systématiquement chaque mise à jour.
+- Liste d'exclusion **par entité** optionnelle : choisis des entités `update.*` précises (ex : les entités de suivi Blueprint de Spook, qui n'ont pas de vraies notes de version) qui ne déclencheront jamais de notification, quel que soit le mode alerte.
 - Tous les réglages peuvent être modifiés à tout moment depuis l'option **Configurer** de l'intégration, sans avoir à la supprimer/réinstaller.
   
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
