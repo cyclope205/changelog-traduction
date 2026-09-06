@@ -219,7 +219,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 await store.async_save(notified)
             return
 
-        delivered = await _deliver(hass, options, title, message, lang)
+        delivered = await _deliver(hass, options, entity_id, title, message, lang)
         _LOGGER.debug("%s: delivered=%s", entity_id, delivered)
 
         # Only mark as notified if delivery actually succeeded on at least
@@ -512,7 +512,12 @@ async def _translate_changelog(
 
 
 async def _deliver(
-    hass: HomeAssistant, options: dict[str, Any], title: str, message: str, lang: str
+    hass: HomeAssistant,
+    options: dict[str, Any],
+    entity_id: str,
+    title: str,
+    message: str,
+    lang: str,
 ) -> bool:
     """Deliver the translated summary via the configured notification channels.
 
@@ -530,7 +535,7 @@ async def _deliver(
                 {
                     "title": notif_title,
                     "message": message,
-                    "notification_id": f"{DOMAIN}_{title}",
+                    "notification_id": f"{DOMAIN}_{entity_id}",
                 },
             )
             delivered = True
