@@ -16,7 +16,8 @@
       }
     },
     "error": {
-      "no_ai_task_entity": "No AI Task entity found. Install and configure an AI integration first (e.g. Google Generative AI) that exposes an ai_task entity, then come back here."
+      "no_ai_task_entity": "No AI Task entity found. Install and configure an AI integration first (e.g. Google Generative AI) that exposes an ai_task entity, then come back here.",
+      "no_notification_channel": "Enable at least one notification channel (persistent notification or mobile notification) - with both disabled, updates would never actually be delivered to you."
     }
   },
   "options": {
@@ -35,7 +36,8 @@
       }
     },
     "error": {
-      "no_ai_task_entity": "No AI Task entity found. Install and configure an AI integration first (e.g. Google Generative AI) that exposes an ai_task entity, then come back here."
+      "no_ai_task_entity": "No AI Task entity found. Install and configure an AI integration first (e.g. Google Generative AI) that exposes an ai_task entity, then come back here.",
+      "no_notification_channel": "Enable at least one notification channel (persistent notification or mobile notification) - with both disabled, updates would never actually be delivered to you."
     }
   }
 }
