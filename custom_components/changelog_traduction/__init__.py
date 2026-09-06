@@ -240,9 +240,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if new_state is None or new_state.state != "on":
             return
         if old_state is not None and old_state.state == "on":
-            # Already "on" before this event (e.g. an unrelated attribute
-            # update on the same entity) - not a fresh availability.
-            return
+            # Already "on" before this event. This is usually just an
+            # unrelated attribute update on the same entity, but it can
+            # also be a genuinely new version becoming available while an
+            # update was already pending (latest_version bumped without
+            # the state itself flipping off/on) - only skip when the
+            # available version attribute is actually unchanged too.
+            old_version = old_state.attributes.get("latest_version")
+            new_version = new_state.attributes.get("latest_version")
+            if old_version == new_version:
+                return
 
         await _process_state(entity_id, new_state)
 
@@ -467,8 +474,14 @@ async def _translate_changelog(
                 else _fallback(lang, "no_changelog", title=title, version="")
             )
         except Exception as err:  # noqa: BLE001
-            _LOGGER.warning("AI Task breaking-change check failed for %s: %s", title, err)
-            return _fallback(lang, "translation_failed", title=title)
+            _LOGGER.warning(
+                "AI Task breaking-change check failed for %s: %s - skipping "
+                "notification (alert mode only notifies on confirmed "
+                "breaking changes, so a failed/unknown classification must "
+                "not produce one either)",
+                title, err,
+            )
+            return None
 
     instructions = (
         f"Translate and summarize, in {language_label}, in 3 to 5 sentences "
