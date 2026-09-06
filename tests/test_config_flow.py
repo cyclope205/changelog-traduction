@@ -133,7 +133,13 @@ class _FakeConfigEntry:
 def _make_options_flow(hass, config_entry):
     flow = ChangelogTraductionOptionsFlow()
     flow.hass = hass
-    flow.config_entry = config_entry
+    # Recent Home Assistant versions expose OptionsFlow.config_entry as a
+    # read-only property (self.hass.config_entries.async_get_entry(self.handler))
+    # rather than a plain settable attribute - so config_entry is injected by
+    # setting flow.handler and mocking hass.config_entries.async_get_entry to
+    # return our fake entry, instead of assigning flow.config_entry directly.
+    flow.handler = "test_entry_id"
+    hass.config_entries.async_get_entry = MagicMock(return_value=config_entry)
     calls = {}
 
     def fake_show_form(*, step_id, data_schema, errors=None):
