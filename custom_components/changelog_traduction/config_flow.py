@@ -37,6 +37,14 @@ class ChangelogTraductionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # silently fall back to the untranslated placeholder message.
             if not self.hass.states.async_entity_ids("ai_task"):
                 errors["base"] = "no_ai_task_entity"
+            elif not user_input.get("use_persistent_notification") and not user_input.get(
+                "use_mobile_notification"
+            ):
+                # With both delivery channels disabled, a processed release
+                # is still marked as "notified" and silently never
+                # delivered or retried - require at least one channel so
+                # this misconfiguration can't be saved in the first place.
+                errors["base"] = "no_notification_channel"
             else:
                 return self.async_create_entry(title="Changelog Traduction", data=user_input)
 
@@ -114,6 +122,10 @@ class ChangelogTraductionOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             if not self.hass.states.async_entity_ids("ai_task"):
                 errors["base"] = "no_ai_task_entity"
+            elif not user_input.get("use_persistent_notification") and not user_input.get(
+                "use_mobile_notification"
+            ):
+                errors["base"] = "no_notification_channel"
             else:
                 return self.async_create_entry(data=user_input)
 
