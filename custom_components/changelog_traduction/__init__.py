@@ -126,6 +126,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Changelog Traduction from a config entry."""
     store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     notified: dict[str, str] = await store.async_load() or {}
+    # Guards _process_state against processing the same entity+version
+    # twice concurrently (see _process_state's wrapper below).
+    in_flight: set[str] = set()
     # entry.options overrides entry.data field-by-field once the options
     # flow has been submitted at least once; before that, entry.data (the
     # original setup values) is all there is. Reloading the entry (see the
@@ -136,6 +139,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     lang = options.get("language") or hass.config.language or "en"
 
     async def _process_state(entity_id: str, new_state: Any) -> None:
+        """Guard _process_state_inner against concurrent double-processing.
+
+        Two state_changed events for the same entity can arrive in quick
+        succession (e.g. an unrelated attribute update racing a genuine
+        version bump) - both would otherwise see the same not-yet-saved
+        'notified' value and could both call the AI Task and send a
+        notification for the exact same version. A simple in-flight set
+        keyed on entity_id + version closes that window.
+        """
+        latest_version = new_state.attributes.get("latest_version")
+        in_flight_key = f"{entity_id}:{latest_version}"
+        if latest_version and in_flight_key in in_flight:
+            _LOGGER.debug(
+                "Skipping %s: already being processed for %s", entity_id, latest_version
+            )
+            return
+        if latest_version:
+            in_flight.add(in_flight_key)
+        try:
+            await _process_state_inner(entity_id, new_state)
+        finally:
+            in_flight.discard(in_flight_key)
+
+    async def _process_state_inner(entity_id: str, new_state: Any) -> None:
         """Process one update entity that is currently (or just became) 'on'."""
         excluded_entities = options.get("excluded_entities") or []
         if entity_id in excluded_entities:
