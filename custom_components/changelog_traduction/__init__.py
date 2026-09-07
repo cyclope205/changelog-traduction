@@ -33,6 +33,14 @@ from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)
 
+# Sentinel returned by _translate_changelog() when the AI Task call itself
+# failed/errored during alert-mode breaking-change classification. Distinct
+# from a legitimate None (no changelog text at all, or the AI confirmed the
+# release is "not breaking") so the caller can skip notifying WITHOUT
+# marking the version as seen - an unknown classification must be retried
+# later, not silently treated as settled.
+_AI_CLASSIFICATION_UNKNOWN = object()
+
 # Matches https://github.com/<owner>/<repo>/releases/tag/<tag>
 # or the shorter .../releases/<tag> form some integrations expose.
 GITHUB_RELEASE_RE = re.compile(
@@ -235,6 +243,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 version=f" ({latest_version})" if latest_version else "",
             )
         _LOGGER.debug("%s: final message=%r", entity_id, message)
+
+        if message is _AI_CLASSIFICATION_UNKNOWN:
+            # AI Task classification failed - do NOT mark this version as
+            # notified, so it gets re-evaluated on the next state change or
+            # HA restart instead of being permanently skipped.
+            return
 
         if message is None:
             # Alert mode determined this release has no breaking changes:
@@ -508,7 +522,7 @@ async def _translate_changelog(
                 "not produce one either)",
                 title, err,
             )
-            return None
+            return _AI_CLASSIFICATION_UNKNOWN
 
     instructions = (
         f"Translate and summarize, in {language_label}, in 3 to 5 sentences "
