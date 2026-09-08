@@ -92,7 +92,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 2. Install "Changelog Traduction", restart Home Assistant.
 3. Settings → Devices & services → Add integration → search "Changelog Traduction".
-4. Pick your notification entity and your AI Task entity. Leave the language field empty to follow Home Assistant's interface language, or set one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
+4. Pick your notification entity and your AI Task entity. The language field defaults to Home Assistant's own interface language - leave it as pre-filled to follow it automatically, or pick a different one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
@@ -187,7 +187,7 @@ See [LICENSE](LICENSE).
 
 2. Installe "Changelog Traduction", redémarre Home Assistant.
 3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
-4. Choisis ton entité de notification et ton entité AI Task. Laisse le champ langue vide pour suivre la langue de l'interface HA, ou fixe-en une explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
+4. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
 
 **Installation manuelle :**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
