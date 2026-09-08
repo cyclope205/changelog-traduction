@@ -66,6 +66,10 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 <img width="1298" height="1179" alt="IMG_7121" src="https://github.com/user-attachments/assets/7dc8f288-38c3-4510-b690-70ea7545f7ad" />
 
+**New: categorized format (🆕 New / 🔧 Fixes / ⚠️ Breaking changes), with an optional version line.**
+
+<img width="640" height="470" alt="Categorized notification example" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" />
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Requirements
@@ -161,6 +165,10 @@ See [LICENSE](LICENSE).
 **4. Notifications détaillées par Changelog Traduction**
 
 <img width="390" height="292" alt="image" src="https://github.com/user-attachments/assets/24330d5d-e3c8-45a3-bcdd-71d3d031bbd0" />
+
+**Nouveau : format catégorisé (🆕 Nouveautés / 🔧 Corrections / ⚠️ Breaking changes), avec ligne de version optionnelle.**
+
+<img width="640" height="470" alt="Exemple de notification catégorisée" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Prérequis
