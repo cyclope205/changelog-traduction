@@ -68,7 +68,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 **New: categorized format (🆕 New / 🔧 Fixes / ⚠️ Breaking changes), with an optional version line.**
 
-<img width="640" height="470" alt="Categorized notification example" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" />
+<img width="640" height="470" alt="Categorized notification example" src="https://github.com/user-attachments/assets/bfa37bef-c606-4459-9104-e5a5e691838e" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
