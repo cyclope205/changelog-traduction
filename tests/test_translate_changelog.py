@@ -87,3 +87,35 @@ def test_alert_mode_malformed_ai_response_returns_none_not_unknown():
         )
     )
     assert result is None
+
+
+def test_normal_mode_ai_empty_response_uses_translation_failed_fallback():
+    # An empty/falsy AI response means the AI Task call succeeded but
+    # produced nothing usable - this must NOT be reported as "no
+    # changelog" (a source was found and sent to the AI; it's the AI
+    # that failed to produce output), so it should use the same wording
+    # as an actual AI Task exception.
+    hass = _make_hass(return_value={"data": ""})
+    result = run(
+        _translate_changelog(
+            hass, {"ai_task_entity": "ai_task.gemini"}, "Some Integration",
+            "some changelog text", "en",
+        )
+    )
+    assert result == "Some Integration: update available (automatic translation failed)."
+
+
+def test_alert_mode_breaking_with_empty_summary_uses_translation_failed_fallback():
+    # has_breaking_changes=True but an empty summary means the AI
+    # confirmed a breaking change yet failed to produce the actual text -
+    # same "translation_failed" wording applies here too, not
+    # "no_changelog" (the release notes were found and were breaking).
+    hass = _make_hass(
+        return_value={"data": {"has_breaking_changes": True, "summary": ""}}
+    )
+    result = run(
+        _translate_changelog(
+            hass, _alert_mode_options(), "Some Integration", "some changelog text", "en"
+        )
+    )
+    assert result == "Some Integration: update available (automatic translation failed)."
