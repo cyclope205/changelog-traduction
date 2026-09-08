@@ -14,6 +14,7 @@ not touch your configuration, and does not control any device.
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 from typing import Any
@@ -202,6 +203,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if match:
             changelog_text = await _fetch_github_release_body(hass, match)
 
+        addon_match = None
         if not changelog_text:
             # No usable GitHub release_url (this is the normal case for
             # Supervisor add-ons, which never set release_url at all) - try
@@ -213,12 +215,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     hass, addon_match.group("slug")
                 )
 
-        if not changelog_text and HA_RELEASE_NOTES_RE.search(release_url):
-            # Home Assistant Core/Supervisor/OS "latest release notes" page -
-            # noisy HTML, no clean per-version API. Fetched raw and handed
-            # to the AI task, which extracts the real content itself.
-            changelog_text = await _fetch_html_page_text(hass, release_url)
-            noisy_source = bool(changelog_text)
+        ha_release_match = None
+        if not changelog_text:
+            ha_release_match = HA_RELEASE_NOTES_RE.search(release_url)
+            if ha_release_match:
+                # Home Assistant Core/Supervisor/OS "latest release notes" page -
+                # noisy HTML, no clean per-version API. Fetched raw and handed
+                # to the AI task, which extracts the real content itself.
+                changelog_text = await _fetch_html_page_text(hass, release_url)
+                noisy_source = bool(changelog_text)
+
+        # Whether a source was identified at all (GitHub release URL
+        # matched, add-on slug recovered, or an HA release-notes URL
+        # matched) - independent of whether the actual fetch succeeded.
+        # Lets alert mode distinguish "confirmed nothing to classify" from
+        # "a fetch failed transiently and should be retried" (see below).
+        source_identified = bool(match) or bool(addon_match) or bool(ha_release_match)
 
         _LOGGER.debug(
             "%s: github_match=%s changelog_text_len=%s noisy_source=%s",
@@ -230,12 +242,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 hass, options, title, changelog_text, lang, noisy_source=noisy_source
             )
         elif options.get("alert_mode_only"):
-            # Alert mode is meant to keep notifications to what matters. With no
-            # changelog text at all there's nothing to classify as breaking or
-            # not, so treat it the same as "not breaking": skip the notification
-            # instead of sending a content-free "update available, no notes"
-            # message every time (e.g. Blueprint update entities tracked only by
-            # raw file hash, which have no real release notes).
+            if source_identified:
+                # A source was identified (GitHub release, add-on
+                # changelog, or the HA release-notes page) but fetching it
+                # failed (network error, rate limit, 404...) - unlike "no
+                # source at all", this is NOT a confirmed "nothing to
+                # classify". Skip WITHOUT marking the version as seen, so
+                # it is retried on the next state change or HA restart
+                # instead of being silently and permanently skipped just
+                # because of a transient failure.
+                _LOGGER.debug(
+                    "%s: source identified but fetch failed - skipping "
+                    "without marking as seen, will retry", entity_id,
+                )
+                return
+            # Genuinely no source at all - nothing to classify as breaking
+            # or not, so treat it the same as "not breaking": skip the
+            # notification instead of sending a content-free "update
+            # available, no notes" message every time (e.g. Blueprint
+            # update entities tracked only by raw file hash, which have no
+            # real release notes).
             message = None
         else:
             message = _fallback(
@@ -307,8 +333,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # registering.
         pending = [s for s in hass.states.async_all("update") if s.state == "on"]
         _LOGGER.debug("Changelog Traduction startup catch-up: %d pending update(s)", len(pending))
-        for state in pending:
-            await _process_state(state.entity_id, state)
+        # Bounded concurrency instead of one-at-a-time: with many pending
+        # updates (e.g. right after a fresh install with dozens of HACS
+        # integrations), fully sequential processing means each one waits
+        # for the previous one's full GitHub/Supervisor fetch + AI Task
+        # round-trip before even starting. A small semaphore lets several
+        # run at once without hammering the AI provider or GitHub's rate
+        # limit all at once.
+        semaphore = asyncio.Semaphore(3)
+
+        async def _bounded(state: Any) -> None:
+            async with semaphore:
+                await _process_state(state.entity_id, state)
+
+        await asyncio.gather(*(_bounded(state) for state in pending))
 
     # IMPORTANT: hass.is_running is True for BOTH CoreState.starting AND
     # CoreState.running - it does NOT mean "startup fully finished". Using
@@ -347,25 +385,57 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _fetch_github_release_body(hass: HomeAssistant, match: re.Match) -> str | None:
-    """Fetch a GitHub release's body text via the public REST API."""
+    """Fetch a GitHub release's body text via the public REST API.
+
+    Retries once after a short delay on transport-level failures (timeout,
+    connection error) - a transient network hiccup shouldn't permanently
+    fall back to the generic "update available" message for an entire
+    version. HTTP-level errors (404, 403 rate limit...) are NOT retried,
+    since those are not transient.
+    """
     owner, repo, tag = match.group("owner"), match.group("repo"), match.group("tag")
     session = async_get_clientsession(hass)
     url = f"https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}"
-    try:
-        async with session.get(
-            url,
-            timeout=15,
-            headers={"Accept": "application/vnd.github+json"},
-        ) as resp:
-            if resp.status != 200:
-                _LOGGER.debug("GitHub release fetch failed (%s) for %s", resp.status, url)
-                return None
-            data = await resp.json()
-    except Exception as err:  # noqa: BLE001 - network errors of any kind are non-fatal here
-        _LOGGER.debug("GitHub release fetch error for %s: %s", url, err)
-        return None
-    body = data.get("body")
-    return body.strip() if body else None
+    for attempt in range(2):
+        try:
+            async with session.get(
+                url,
+                timeout=15,
+                headers={"Accept": "application/vnd.github+json"},
+            ) as resp:
+                remaining = resp.headers.get("X-RateLimit-Remaining")
+                if remaining is not None and remaining.isdigit() and int(remaining) <= 1:
+                    # The unauthenticated GitHub API is capped at 60
+                    # requests/hour (documented in README "Known
+                    # limitations"). Log this loudly (WARNING, not DEBUG)
+                    # so it's actually visible instead of silently causing
+                    # every subsequent update this hour to fall back to
+                    # the generic "update available" message.
+                    _LOGGER.warning(
+                        "GitHub API rate limit nearly exhausted (%s "
+                        "remaining, resets at unix time %s) - further "
+                        "changelog fetches this hour will likely fall "
+                        "back to the generic 'update available' message",
+                        remaining, resp.headers.get("X-RateLimit-Reset"),
+                    )
+                if resp.status != 200:
+                    _LOGGER.debug(
+                        "GitHub release fetch failed (%s) for %s", resp.status, url
+                    )
+                    return None
+                data = await resp.json()
+            body = data.get("body")
+            return body.strip() if body else None
+        except Exception as err:  # noqa: BLE001 - network errors of any kind are non-fatal here
+            if attempt == 0:
+                _LOGGER.debug(
+                    "GitHub release fetch error for %s, retrying once: %s", url, err
+                )
+                await asyncio.sleep(2)
+                continue
+            _LOGGER.debug("GitHub release fetch error for %s: %s", url, err)
+            return None
+    return None
 
 
 async def _fetch_addon_changelog(hass: HomeAssistant, slug: str) -> str | None:
@@ -509,10 +579,15 @@ async def _translate_changelog(
             if not isinstance(data, dict) or not data.get("has_breaking_changes"):
                 return None
             summary = data.get("summary")
+            # has_breaking_changes is True here, so a falsy summary means
+            # the AI confirmed a breaking change but failed to produce the
+            # actual text - use "translation_failed" wording, not
+            # "no_changelog" (release notes were found and were breaking,
+            # the AI just didn't return a usable summary for them).
             return (
                 str(summary).strip()
                 if summary
-                else _fallback(lang, "no_changelog", title=title, version="")
+                else _fallback(lang, "translation_failed", title=title)
             )
         except Exception as err:  # noqa: BLE001
             _LOGGER.warning(
@@ -546,7 +621,13 @@ async def _translate_changelog(
             return_response=True,
         )
         text = result.get("data") if isinstance(result, dict) else None
-        return str(text).strip() if text else _fallback(lang, "no_changelog", title=title, version="")
+        # A falsy/empty AI response here means the AI Task call succeeded
+        # but produced nothing usable - NOT the same as "no changelog
+        # source was found" (changelog_text was non-empty, or this
+        # function wouldn't have been called at all). Use the
+        # "translation_failed" wording instead of "no_changelog" so the
+        # notification doesn't misleadingly imply no release notes exist.
+        return str(text).strip() if text else _fallback(lang, "translation_failed", title=title)
     except Exception as err:  # noqa: BLE001
         _LOGGER.warning("AI Task translation failed for %s: %s", title, err)
         return _fallback(lang, "translation_failed", title=title)
