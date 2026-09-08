@@ -715,18 +715,34 @@ async def _translate_changelog(
         },
     }
     try:
-        result = await hass.services.async_call(
-            "ai_task",
-            "generate_data",
-            {
-                "task_name": "changelog translation",
-                "instructions": instructions,
-                "entity_id": ai_task_entity,
-                "structure": structure,
-            },
-            blocking=True,
-            return_response=True,
-        )
+        result = None
+        last_err: Exception | None = None
+        for attempt in range(2):
+            try:
+                result = await hass.services.async_call(
+                    "ai_task",
+                    "generate_data",
+                    {
+                        "task_name": "changelog translation",
+                        "instructions": instructions,
+                        "entity_id": ai_task_entity,
+                        "structure": structure,
+                    },
+                    blocking=True,
+                    return_response=True,
+                )
+                break
+            except Exception as inner_err:  # noqa: BLE001
+                last_err = inner_err
+                if attempt == 0:
+                    # A transient AI Task failure (e.g. the model
+                    # provider returning a temporary "high demand"/503
+                    # error) shouldn't burn the one-shot notification
+                    # opportunity for this version - retry once after a
+                    # short delay before giving up.
+                    await asyncio.sleep(2)
+        if result is None and last_err is not None:
+            raise last_err
         data = result.get("data") if isinstance(result, dict) else None
         if not isinstance(data, dict):
             # The AI Task call succeeded but didn't return the expected
