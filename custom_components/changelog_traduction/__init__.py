@@ -131,6 +131,69 @@ def _fallback(lang: str, key: str, **kwargs: Any) -> str:
     return strings[key].format(**kwargs)
 
 
+# Section headers for the categorized notification body (see
+# _format_categorized_message below). These are fixed, hand-written
+# strings - NOT AI-generated - so the layout stays consistent regardless
+# of what the model returns; only the bullet content itself is
+# AI-translated. Only a handful of languages are hand-written, matching
+# FALLBACK_STRINGS above; everything else falls back to English.
+CATEGORY_LABELS: dict[str, dict[str, str]] = {
+    "en": {
+        "new_features": "🆕 New",
+        "fixes": "🔧 Fixed",
+        "breaking_changes": "⚠️ Breaking changes",
+        "none": "None",
+    },
+    "fr": {
+        "new_features": "🆕 Nouveautés",
+        "fixes": "🔧 Corrections",
+        "breaking_changes": "⚠️ Breaking changes",
+        "none": "Aucune",
+    },
+    "de": {
+        "new_features": "🆕 Neu",
+        "fixes": "🔧 Behoben",
+        "breaking_changes": "⚠️ Breaking Changes",
+        "none": "Keine",
+    },
+    "es": {
+        "new_features": "🆕 Novedades",
+        "fixes": "🔧 Correcciones",
+        "breaking_changes": "⚠️ Cambios importantes",
+        "none": "Ninguna",
+    },
+}
+
+
+def _format_categorized_message(
+    lang: str,
+    new_features: list[str],
+    fixes: list[str],
+    breaking_changes: list[str],
+    *,
+    version_line: str | None = None,
+) -> str:
+    """Render the three AI-categorized bullet lists into a notification body.
+
+    All three section headers are always shown, even when a category is
+    empty (using a localized "none" placeholder) - a reader expects to
+    see all three sections and judge for themselves that nothing changed
+    in one of them, rather than wonder whether a missing section means
+    "empty" or "not checked".
+    """
+    labels = CATEGORY_LABELS.get(lang, CATEGORY_LABELS["en"])
+    sections = [version_line] if version_line else []
+    for key, items in (
+        ("new_features", new_features),
+        ("fixes", fixes),
+        ("breaking_changes", breaking_changes),
+    ):
+        header = labels[key]
+        body = "\n".join(f"• {item}" for item in items) if items else f"• {labels['none']}"
+        sections.append(f"{header}\n{body}")
+    return "\n\n".join(sections)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Changelog Traduction from a config entry."""
     store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
@@ -187,13 +250,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         release_url = new_state.attributes.get("release_url") or ""
         entity_picture = new_state.attributes.get("entity_picture") or ""
         title = new_state.attributes.get("title") or new_state.name or entity_id
+        # Captured once and reused below (both for the "already notified"
+        # check and, later, to render a "vOLD -> vNEW" line in the
+        # notification body) - notified[entity_id] is not mutated again
+        # until delivery succeeds, so this stays valid for the whole call.
+        old_version = notified.get(entity_id)
 
         _LOGGER.debug(
             "Processing %s: latest_version=%s release_url=%r already_notified=%s lang=%s",
-            entity_id, latest_version, release_url, notified.get(entity_id), lang,
+            entity_id, latest_version, release_url, old_version, lang,
         )
 
-        if latest_version and notified.get(entity_id) == latest_version:
+        if latest_version and old_version == latest_version:
             _LOGGER.debug("Skipping %s: already notified for %s", entity_id, latest_version)
             return  # Already announced this exact version (survives restarts).
 
@@ -238,8 +306,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
 
         if changelog_text:
+            version_line = None
+            if latest_version:
+                version_line = (
+                    f"{old_version} → {latest_version}"
+                    if old_version and old_version != latest_version
+                    else latest_version
+                )
             message = await _translate_changelog(
-                hass, options, title, changelog_text, lang, noisy_source=noisy_source
+                hass, options, title, changelog_text, lang,
+                noisy_source=noisy_source, version_line=version_line,
             )
         elif options.get("alert_mode_only"):
             if source_identified:
@@ -506,6 +582,7 @@ async def _translate_changelog(
     lang: str,
     *,
     noisy_source: bool = False,
+    version_line: str | None = None,
 ) -> str | None:
     """Ask the configured AI Task entity to translate/summarize the changelog.
 
@@ -600,14 +677,43 @@ async def _translate_changelog(
             return _AI_CLASSIFICATION_UNKNOWN
 
     instructions = (
-        f"Translate and summarize, in {language_label}, in 3 to 5 sentences "
-        f"maximum, the following release notes for the Home Assistant "
-        f"integration '{title}'. Keep only the changes that matter to an "
-        "end user, ignore purely internal technical details (refactoring, "
-        "CI, code typos)." + noise_hint + " Reply only with the translated "
-        "text, with no introduction or meta-commentary.\n\n"
+        f"Review the following release notes for the Home Assistant "
+        f"integration '{title}' and categorize the changes, in "
+        f"{language_label}, into three short bullet lists: new features or "
+        "additions, bug fixes, and breaking changes (renamed or removed "
+        "entities/services/options, required configuration migrations, or "
+        "anything that could break an existing automation or dashboard). "
+        "Ignore purely internal technical details (refactoring, CI, code "
+        "typos) - only list changes that matter to an end user. Keep each "
+        "bullet to one short sentence." + noise_hint + "\n\n"
         f"{changelog_text[:max_chars]}"
     )
+    structure = {
+        "new_features": {
+            "description": (
+                f"Bullet list in {language_label} of new features or "
+                "additions in this release. Empty list if none."
+            ),
+            "required": True,
+            "selector": {"text": {"multiple": True}},
+        },
+        "fixes": {
+            "description": (
+                f"Bullet list in {language_label} of bug fixes in this "
+                "release. Empty list if none."
+            ),
+            "required": True,
+            "selector": {"text": {"multiple": True}},
+        },
+        "breaking_changes": {
+            "description": (
+                f"Bullet list in {language_label} of breaking changes in "
+                "this release, as defined above. Empty list if none."
+            ),
+            "required": True,
+            "selector": {"text": {"multiple": True}},
+        },
+    }
     try:
         result = await hass.services.async_call(
             "ai_task",
@@ -616,18 +722,29 @@ async def _translate_changelog(
                 "task_name": "changelog translation",
                 "instructions": instructions,
                 "entity_id": ai_task_entity,
+                "structure": structure,
             },
             blocking=True,
             return_response=True,
         )
-        text = result.get("data") if isinstance(result, dict) else None
-        # A falsy/empty AI response here means the AI Task call succeeded
-        # but produced nothing usable - NOT the same as "no changelog
-        # source was found" (changelog_text was non-empty, or this
-        # function wouldn't have been called at all). Use the
-        # "translation_failed" wording instead of "no_changelog" so the
-        # notification doesn't misleadingly imply no release notes exist.
-        return str(text).strip() if text else _fallback(lang, "translation_failed", title=title)
+        data = result.get("data") if isinstance(result, dict) else None
+        if not isinstance(data, dict):
+            # The AI Task call succeeded but didn't return the expected
+            # structured shape at all - genuinely nothing usable to show,
+            # same "translation_failed" wording as an outright exception.
+            return _fallback(lang, "translation_failed", title=title)
+        # A well-formed response with all three lists empty is a
+        # legitimate result (e.g. a release that's purely internal
+        # refactoring/CI with nothing user-facing to report), not a
+        # failure - it still renders as a categorized message, just with
+        # every section showing the "none" placeholder.
+        return _format_categorized_message(
+            lang,
+            data.get("new_features") or [],
+            data.get("fixes") or [],
+            data.get("breaking_changes") or [],
+            version_line=version_line,
+        )
     except Exception as err:  # noqa: BLE001
         _LOGGER.warning("AI Task translation failed for %s: %s", title, err)
         return _fallback(lang, "translation_failed", title=title)
