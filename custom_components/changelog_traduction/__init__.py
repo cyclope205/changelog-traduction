@@ -717,7 +717,8 @@ async def _translate_changelog(
     try:
         result = None
         last_err: Exception | None = None
-        for attempt in range(2):
+        delays = [5, 10]
+        for attempt in range(3):
             try:
                 result = await hass.services.async_call(
                     "ai_task",
@@ -734,13 +735,13 @@ async def _translate_changelog(
                 break
             except Exception as inner_err:  # noqa: BLE001
                 last_err = inner_err
-                if attempt == 0:
+                if attempt < len(delays):
                     # A transient AI Task failure (e.g. the model
                     # provider returning a temporary "high demand"/503
                     # error) shouldn't burn the one-shot notification
-                    # opportunity for this version - retry once after a
-                    # short delay before giving up.
-                    await asyncio.sleep(2)
+                    # opportunity for this version - retry up to twice
+                    # more, waiting longer each time, before giving up.
+                    await asyncio.sleep(delays[attempt])
         if result is None and last_err is not None:
             raise last_err
         data = result.get("data") if isinstance(result, dict) else None
