@@ -1,0 +1,62 @@
+name: Badge supporters BuyMeACoffee
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Recuperer le nombre de supporters BuyMeACoffee
+        id: count
+        env:
+          BMC_TOKEN: ${{ secrets.BMC_TOKEN }}
+        run: |
+          set -e
+          count=0
+          page=1
+          max_pages=50
+          while [ "$page" -le "$max_pages" ]; do
+            response=$(curl -s -H "Authorization: Bearer $BMC_TOKEN" "https://developers.buymeacoffee.com/api/v1/supporters?page=$page")
+            page_count=$(echo "$response" | jq '.data | length' 2>/dev/null)
+            if [ -z "$page_count" ] || [ "$page_count" = "null" ]; then
+              echo "Reponse API inattendue a la page $page :"
+              echo "$response"
+              break
+            fi
+            if [ "$page_count" -eq 0 ]; then
+              break
+            fi
+            count=$((count + page_count))
+            page=$((page + 1))
+          done
+          echo "Nombre total de supporters : $count"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Generer le badge JSON
+        run: |
+          mkdir -p badges
+          cat > badges/bmc-supporters.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "buymeacoffee supporters",
+            "message": "${{ steps.count.outputs.count }}",
+            "color": "yellow"
+          }
+          EOF
+
+      - name: Committer si changement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add badges/bmc-supporters.json
+          git diff --staged --quiet || git commit -m "Mise a jour automatique du badge supporters BuyMeACoffee"
+          git push
