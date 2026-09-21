@@ -235,6 +235,7 @@ Voir [LICENSE](LICENSE).
 <a href="https://buymeacoffee.com/cyclope205"><img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
 <a href="https://paypal.me/cyclope205"><img src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="PayPal"></a>
 
-<a href="https://buymeacoffee.com/cyclope205"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/cyclope205/changelog-traduction/main/badges/bmc-supporters.json&style=for-the-badge" alt="Supporters BuyMeACoffee"></a>
+<!--START_SECTION:buy-me-a-coffee-->
+<!--END_SECTION:buy-me-a-coffe-->
 
 </div>
