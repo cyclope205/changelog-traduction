@@ -13,7 +13,7 @@ jobs:
     name: Update Buy Me A Coffee section in this repo's README
     runs-on: ubuntu-latest
     steps:
-      - uses: akosbalasko/coffee-readme@main
+      - uses: akosbalasko/coffee-readme@021a2db498f0682fe902eca059c04cc800825c0a # v1.0.4
         with:
           BUY_ME_A_COFFEE_TOKEN: ${{ secrets.BMC_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
