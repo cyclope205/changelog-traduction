@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 6 * * *"
 
+permissions:
+  contents: write
+
 jobs:
   bmac-readme:
     name: Update Buy Me A Coffee section in this repo's README
