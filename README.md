@@ -6,17 +6,19 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
+---
+
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/cyclope205)
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)
 <img src="custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="80">
 
 ### ❤️ Merci à mes donateurs
 
-Un grand merci à toutes les personnes qui soutiennent **Changelog Traduction** via Buy Me a Coffee.<br>
-Votre soutien m’aide à maintenir le projet, corriger les bugs et développer de nouvelles fonctionnalités.
+Merci pour votre soutien à **Changelog Traduction** !
 
 <!--START_SECTION:buy-me-a-coffee--><div><img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe beluga</b> </div>  <div><i>De la bombe !!!!</i></div><br><!--END_SECTION:buy-me-a-coffee-->
 
+---
 
 A Home Assistant custom integration that watches your `update.*` entities and, when an update becomes available, fetches its real release notes and has an AI Task entity translate/summarize them into your language — delivered as a persistent notification and/or a mobile push notification.
 
@@ -46,14 +48,14 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 **1. Look for the integration under Devices and Services**
 
-<img width="727" height="292" alt="Capture d&#39;écran 2026-08-27 102305" src="https://github.com/user-attachments/assets/fcdd0ebc-1356-4667-b640-7c6de0cd6137" />
+<img width="727" height="292" alt="Capture d'écran 2026-08-27 102305" src="https://github.com/user-attachments/assets/fcdd0ebc-1356-4667-b640-7c6de0cd6137" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configure the integration**
 
-<img width="1332" height="813" alt="Capture d&#39;écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" />
+<img width="1332" height="813" alt="Capture d'écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" />
 
-<img width="716" height="701" alt="Capture d&#39;écran 2026-08-31 104013" src="https://github.com/user-attachments/assets/89cf4017-2699-4d89-b32e-9cae4e18773e" />
+<img width="716" height="701" alt="Capture d'écran 2026-08-31 104013" src="https://github.com/user-attachments/assets/89cf4017-2699-4d89-b32e-9cae4e18773e" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Native Home Assistant notifications**
@@ -95,7 +97,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 2. Install "Changelog Traduction", restart Home Assistant.
 3. Settings → Devices & services → Add integration → search "Changelog Traduction".
-4. Pick your notification entity and your AI Task entity. The language field defaults to Home Assistant's own interface language - leave it as pre-filled to follow it automatically, or pick a different one explicitly. Everything here — including the new alert mode — can be revisited later from the integration's **Configure** option.
+4. Pick your notification entity and your AI Task entity. The language field defaults to Home Assistant's own interface language - leave it as pre-filled to follow it automatically, or pick a different one explicitly in the config screen.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
@@ -153,7 +155,7 @@ See [LICENSE](LICENSE).
 
 <img width="727" height="771" alt="image" src="https://github.com/user-attachments/assets/9dd24406-c0b7-4752-ac3d-bf943cd33b19" />
 
-<img width="730" height="776" alt="Capture d&#39;écran 2026-08-31 103333" src="https://github.com/user-attachments/assets/794b86dd-79b1-4cb6-aa6a-ed09afc7c422" />
+<img width="730" height="776" alt="Capture d'écran 2026-08-31 103333" src="https://github.com/user-attachments/assets/794b86dd-79b1-4cb6-aa6a-ed09afc7c422" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Notifications natives Home Assistant**
@@ -194,7 +196,7 @@ See [LICENSE](LICENSE).
 
 2. Installe "Changelog Traduction", redémarre Home Assistant.
 3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
-4. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement. Tout ceci — y compris le nouveau mode alerte — peut être modifié plus tard depuis l'option **Configurer** de l'intégration.
+4. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement dans l'écran de configuration.
 
 **Installation manuelle :**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
