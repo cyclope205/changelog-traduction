@@ -4,11 +4,11 @@
 <tr>
 <td>
 
-[![release](https://img.shields.io/github/v/release/cyclope205/changelog-traduction?label=release&color=blue)](https://github.com/cyclope205/changelog-traduction/releases)
-[![build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
-[![license](https://img.shields.io/github/license/cyclope205/changelog-traduction?color=green)](LICENSE)
-[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-
+[![Release](https://img.shields.io/github/v/release/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/releases)
+[![Build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
+[![Tests](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 </td>
 <td width="110" align="right">
 <img src="custom_components/changelog_traduction/brand/logo.png" width="90" alt="logo">
