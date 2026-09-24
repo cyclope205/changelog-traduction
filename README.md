@@ -8,7 +8,7 @@
 
 ---
 
-[![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)
+[![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)\n[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://changelog-traduction.vercel.app/api/donate?repo=changelog-traduction)
 <img src="custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="80">
 
 A Home Assistant custom integration that watches your `update.*` entities and, when an update becomes available, fetches its real release notes and has an AI Task entity translate/summarize them into your language — delivered as a persistent notification and/or a mobile push notification.
@@ -210,7 +210,7 @@ See [LICENSE](LICENSE).
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-### Licence
+#\n\n<!--START_SECTION:buy-me-a-coffee-->\n### ☕ Merci aux donateurs\n\n<!--END_SECTION:buy-me-a-coffee-->\n\n## Licence
 
 Voir [LICENSE](LICENSE).
 
