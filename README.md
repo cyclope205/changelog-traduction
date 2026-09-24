@@ -16,7 +16,7 @@
 
 Merci pour votre soutien à **Changelog Traduction** !
 
-<!--START_SECTION:buy-me-a-coffee--><div><img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe beluga</b> </div>  <div><i>De la bombe !!!!</i></div><br><!--END_SECTION:buy-me-a-coffee-->
+<!--START_SECTION:buy-me-a-coffee--><div><img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe b*****</b> </div>  <div><i>De la bombe !!!!</i></div><br><!--END_SECTION:buy-me-a-coffee-->
 
 ---
 
