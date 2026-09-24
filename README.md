@@ -219,7 +219,7 @@ See [LICENSE](LICENSE).
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#\n\n\n\n## Licence
+## Licence
 
 Voir [LICENSE](LICENSE).
 
