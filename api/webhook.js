@@ -71,7 +71,7 @@ async function bmcGetSupporter(supporterId) {
   return payload?.data || payload?.supporter || payload || null;
 }
 
-async function updateReadme(repo, donation, supporter) {
+async function updateReadme(repo, donation, supporter, eventId) {
   const token = process.env.GITHUB_TOKEN;
   if (!token) throw new Error("GITHUB_TOKEN is not configured");
 
@@ -104,7 +104,6 @@ async function updateReadme(repo, donation, supporter) {
       (String(donation.created_at || supporter?.support_created_on || "").length <= 10 ? 1000 : 1)
   ).toISOString().slice(0, 10);
 
-  const eventId = String(event.event_id ?? donation.id ?? supporter?.support_id ?? "");
   const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
   const block = `${markerStart}\n${entry}\n${markerEnd}`;
 
@@ -194,7 +193,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const result = await updateReadme(repo, donation, supporter);
+    const result = await updateReadme(repo, donation, supporter, event.event_id);
 
     console.log("BMC donation attributed", {
       event_id: event.event_id,
