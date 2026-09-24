@@ -99,9 +99,9 @@ async function updateReadme(repo, donation, supporter, eventId) {
     supporter?.supporter_name ||
     supporter?.payer_name
   );
+  const createdAt = donation.created_at || supporter?.support_created_on || Date.now();
   const date = new Date(
-    Number(donation.created_at || supporter?.support_created_on || Date.now()) *
-      (String(donation.created_at || supporter?.support_created_on || "").length <= 10 ? 1000 : 1)
+    typeof createdAt === "number" ? createdAt * 1000 : createdAt
   ).toISOString().slice(0, 10);
 
   const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
