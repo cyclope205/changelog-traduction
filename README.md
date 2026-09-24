@@ -7,6 +7,15 @@
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
 ---
+### ☕ Merci aux donateurs
+
+<!--START_SECTION:buy-me-a-coffee-->
+<div>
+<img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe b*****</b>
+</div>
+<div><i>De la bombe !!!!</i></div>
+<!--END_SECTION:buy-me-a-coffee-->
+
 
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205) [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://changelog-traduction.vercel.app/api/donate?repo=changelog-traduction)
 <img src="custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="80">
@@ -210,7 +219,7 @@ See [LICENSE](LICENSE).
 - Seules quelques langues ont des messages de repli écrits à la main (utilisés uniquement si la traduction elle-même échoue) ; les autres langues utilisent l'anglais par défaut pour ces messages précis. Les traductions générées par l'IA, elles, fonctionnent dans n'importe quelle langue configurée.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#\n\n<!--START_SECTION:buy-me-a-coffee--><div><img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe b*****</b> </div>  <div><i>De la bombe !!!!</i></div><br><!--END_SECTION:buy-me-a-coffee-->\n\n## Licence
+#\n\n\n\n## Licence
 
 Voir [LICENSE](LICENSE).
 
