@@ -104,7 +104,8 @@ async function updateReadme(repo, donation, supporter) {
       (String(donation.created_at || supporter?.support_created_on || "").length <= 10 ? 1000 : 1)
   ).toISOString().slice(0, 10);
 
-  const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})`;
+  const eventId = String(event.event_id ?? donation.id ?? supporter?.support_id ?? "");
+  const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
   const block = `${markerStart}\n${entry}\n${markerEnd}`;
 
   let updated;
@@ -112,7 +113,9 @@ async function updateReadme(repo, donation, supporter) {
   const end = current.indexOf(markerEnd);
 
   if (start >= 0 && end >= start) {
-    updated = current.slice(0, start) + block + current.slice(end + markerEnd.length);
+    const existing = current.slice(start, end);
+    if (eventId && existing.includes("#" + eventId)) return { updated: false };
+    updated = current.slice(0, end) + "\n" + entry + current.slice(end);
   } else {
     const section = `\n\n<div align="center">\n\n### ☕ Merci aux donateurs\n\n${block}\n\n</div>\n`;
     const licence = current.search(/^##? Licence$/mi);
