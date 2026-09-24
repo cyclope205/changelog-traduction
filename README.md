@@ -1,23 +1,14 @@
 # Changelog Traduction
 
-<table>
-<tr>
-<td>
-
 [![Release](https://img.shields.io/github/v/release/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/releases)
 [![Build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
 [![Tests](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-</td>
-<td width="110" align="right">
-<img src="custom_components/changelog_traduction/brand/logo.png" width="90" alt="logo">
-</td>
-</tr>
-</table>
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/cyclope205)
 [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/cyclope205)
+<img src="custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="32">
 <!--START_SECTION:buy-me-a-coffee--><div><img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe beluga</b> </div>  <div><i>De la bombe !!!!</i></div><br><!--END_SECTION:buy-me-a-coffee-->
 
 
