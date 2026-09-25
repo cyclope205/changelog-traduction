@@ -11,7 +11,9 @@
 
 <!--START_SECTION:paypal-->
 
-- 💙 J***** · 5,00 € · 25/09/2026 <!-- order:6K51038324499415R --><!--END_SECTION:paypal-->
+- 💙 J***** · 5,00 € · 25/09/2026 <!-- order:6K51038324499415R -->
+- 💙 J***** · 5,00 € · 25/09/2026
+  > test de don de l'intégration <!-- order:5C016725E0574264T --><!--END_SECTION:paypal-->
 
 <!--START_SECTION:buy-me-a-coffee-->
 <div>
