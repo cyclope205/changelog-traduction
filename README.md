@@ -10,7 +10,7 @@
 ### ☕ Merci aux donateurs
 
 <!--START_SECTION:paypal-->
-- 💙 **J******* — 5.00 EUR (2026-09-25) — order:70J09181BB860791E
+- 💙 **J***** ** · 5,00 € · 25/09/2026 <!-- order:70J09181BB860791E -->
 <!--END_SECTION:paypal-->
 
 <!--START_SECTION:buy-me-a-coffee-->
@@ -145,7 +145,7 @@ See [LICENSE](LICENSE).
 - Envoie le résultat en notification persistante et/ou notification push vers l'appareil de ton choix.
 - Ne notifie qu'une fois par version (suivi en interne), donc pas de spam à chaque redémarrage de HA.
 - Mode **alerte** optionnel : ne notifie que si une version contient des changements majeurs (entités/services renommés ou supprimés, migration de configuration requise...), classés par l'IA, au lieu de traduire/résumer systématiquement chaque mise à jour.
-- Liste d'exclusion **par entité** optionnelle : choisis des entités `update.*` précises (ex : les entités de suivi Blueprint de Spook, qui n'ont pas de vraies notes de version) qui ne déclencheront jamais de notification, quel que soit le mode alerte.
+- Liste d'exclusion **par entité** optionnelle : choisis des entités `update.*` précises (ex : les entités de suivi Blueprint de Spook, qui n'ont pas de vraies notes de version) qui ne déclencheront jamais une notification, quel que soit le mode alerte.
 - Tous les réglages peuvent être modifiés à tout moment depuis l'option **Configurer** de l'intégration, sans avoir à la supprimer/réinstaller.
   
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -177,6 +177,7 @@ See [LICENSE](LICENSE).
 <img width="640" height="470" alt="Exemple de notification catégorisée" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ### Prérequis
 
 - Une entité **AI Task** déjà configurée (ex : Google Gemini, OpenAI, Ollama, ou tout autre fournisseur AI Task).
@@ -203,7 +204,7 @@ See [LICENSE](LICENSE).
 3. Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
 4. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement dans l'écran de configuration.
 
-**Installation manuelle :**
+**Installation manuelle:**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
 2. Redémarre complètement Home Assistant (un simple rechargement de l'intégration ne suffit pas pour prendre en compte de nouveaux fichiers).
 3. Ajoute l'intégration comme ci-dessus.
