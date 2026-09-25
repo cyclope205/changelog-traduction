@@ -10,7 +10,8 @@
 ### ☕ Merci aux donateurs
 
 <!--START_SECTION:paypal-->
-<!--END_SECTION:paypal-->
+
+- 💙 J***** · 5,00 € · 25/09/2026 <!-- order:84W159007V578814F --><!--END_SECTION:paypal-->
 
 <!--START_SECTION:buy-me-a-coffee-->
 <div>
