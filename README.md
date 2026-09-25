@@ -9,6 +9,10 @@
 ---
 ### ☕ Merci aux donateurs
 
+<!--START_SECTION:paypal-->
+- 💙 **J******* — 5.00 EUR (2026-09-25) — order:70J09181BB860791E
+<!--END_SECTION:paypal-->
+
 <!--START_SECTION:buy-me-a-coffee-->
 <div>
 <img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe b*****</b>
