@@ -18,6 +18,7 @@ import asyncio
 import logging
 import re
 from typing import Any
+from urllib.parse import urlparse
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import (
@@ -59,7 +60,37 @@ ADDON_SLUG_RE = re.compile(r"/api/hassio/addons/(?P<slug>[^/]+)/icon")
 # (or the rc. subdomain for beta). It's not per-version machine-readable
 # like a GitHub release, so instead of parsing it, we fetch the raw page
 # and let the AI task do extraction + translation together.
-HA_RELEASE_NOTES_RE = re.compile(r"home-assistant\.io/(?:latest-release-notes|blog)/")
+_HA_RELEASE_NOTES_HOST = "home-assistant.io"
+_HA_RELEASE_NOTES_HOST_SUFFIX = ".home-assistant.io"
+_HA_RELEASE_NOTES_PATH_PREFIXES = ("/latest-release-notes/", "/blog/")
+
+
+def _is_ha_release_notes_url(url: str) -> bool:
+    """Return True only if url is genuinely a home-assistant.io release-notes page.
+
+    The previous implementation used a bare regex .search() for
+    "home-assistant.io/(latest-release-notes|blog)/" ANYWHERE in the string,
+    with no real hostname check - a release_url such as
+    "https://attacker.example/home-assistant.io/blog/" would match, and the
+    raw URL is then fetched as-is by _fetch_html_page_text, letting a
+    crafted release_url (e.g. from a malicious/compromised integration
+    setting its update entity's release_url attribute) make Home Assistant
+    issue an HTTP request to an arbitrary attacker-controlled host. This
+    parses the URL properly and only accepts an exact home-assistant.io
+    host (or a genuine subdomain, e.g. rc.home-assistant.io for the beta
+    channel - verified in homeassistant/components/homeassistant/__init__.py's
+    RELEASE_NOTES_URL), never a substring match.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    if parsed.scheme not in ("http", "https"):
+        return False
+    host = (parsed.hostname or "").lower()
+    if host != _HA_RELEASE_NOTES_HOST and not host.endswith(_HA_RELEASE_NOTES_HOST_SUFFIX):
+        return False
+    return parsed.path.startswith(_HA_RELEASE_NOTES_PATH_PREFIXES)
 
 MAX_CHANGELOG_CHARS = 4000
 # The release-notes HTML page carries a lot of nav/footer noise around the
@@ -285,7 +316,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         ha_release_match = None
         if not changelog_text:
-            ha_release_match = HA_RELEASE_NOTES_RE.search(release_url)
+            ha_release_match = _is_ha_release_notes_url(release_url)
             if ha_release_match:
                 # Home Assistant Core/Supervisor/OS "latest release notes" page -
                 # noisy HTML, no clean per-version API. Fetched raw and handed
