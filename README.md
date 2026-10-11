@@ -1,10 +1,15 @@
 # Changelog Traduction
 
+[![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![Release](https://img.shields.io/github/v/release/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/releases)
 [![Build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
 [![Tests](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml)
+[![Issues](https://img.shields.io/github/issues/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/issues)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![HACS: Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Downloads](https://img.shields.io/github/downloads/cyclope205/changelog-traduction/total)](https://github.com/cyclope205/changelog-traduction/releases)
+[![Downloads latest](https://img.shields.io/github/downloads/cyclope205/changelog-traduction/latest/total)](https://github.com/cyclope205/changelog-traduction/releases/latest)
+[![Stars](https://img.shields.io/github/stars/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/stargazers)
+[![Forks](https://img.shields.io/github/forks/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/network/members)
 
 ---
 
