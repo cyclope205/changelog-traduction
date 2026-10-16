@@ -6,6 +6,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const crypto = require("node:crypto");
+const http = require("node:http");
 
 const handler = require("../api/webhook.js");
 const {
@@ -380,6 +381,60 @@ test("handler pauses the request instead of destroying it on oversize (P2b)", as
     assert.equal(res.statusCode, 413);
     assert.equal(paused, true, "expected req.pause() to be called");
     assert.equal(destroyed, false, "expected req.destroy() NOT to be called");
+  });
+});
+
+test("real HTTP client receives 413 for an oversized webhook body (P2b)", async () => {
+  await withEnv({ BMC_WEBHOOK_SECRET: SECRET }, async () => {
+    const server = http.createServer((req, res) => {
+      // Adapt Node's real ServerResponse to the small status().json() API
+      // used by the Vercel handler, while preserving real socket behavior.
+      res.status = (code) => { res.statusCode = code; return res; };
+      res.json = (payload) => {
+        res.setHeader("content-type", "application/json");
+        res.end(JSON.stringify(payload));
+        return res;
+      };
+      handler(req, res);
+    });
+
+    await new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolve);
+    });
+
+    try {
+      const body = Buffer.alloc(MAX_BODY_BYTES + 1024, 0x61);
+      const response = await new Promise((resolve, reject) => {
+        const req = http.request({
+          host: "127.0.0.1",
+          port: server.address().port,
+          path: "/api/webhook",
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "content-length": body.length,
+            "x-signature-sha256": "irrelevant",
+            connection: "close",
+          },
+        }, (res) => {
+          const chunks = [];
+          res.on("data", (chunk) => chunks.push(chunk));
+          res.on("end", () => resolve({
+            statusCode: res.statusCode,
+            body: Buffer.concat(chunks).toString("utf8"),
+          }));
+        });
+        req.setTimeout(5000, () => req.destroy(new Error("Timed out waiting for HTTP 413")));
+        req.once("error", reject);
+        req.end(body);
+      });
+
+      assert.equal(response.statusCode, 413);
+      assert.deepEqual(JSON.parse(response.body), { error: "Payload too large" });
+    } finally {
+      await new Promise((resolve) => server.close(resolve));
+    }
   });
 });
 
