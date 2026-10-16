@@ -41,3 +41,5 @@ jobs:
           node-version: "22"
       - name: Run webhook tests
         run: node --test tests/webhook.test.js
+      - name: Run real-connection test (P2b)
+        run: node tests/real-conn-test.js
