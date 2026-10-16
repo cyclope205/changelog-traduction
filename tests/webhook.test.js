@@ -11,6 +11,7 @@ const handler = require("../api/webhook.js");
 const {
   safeEqualHex,
   escapeMarkdown,
+  hasEventId,
   anonymizeName,
   repoFromReferer,
   buildReadmeUpdate,
@@ -29,6 +30,7 @@ function makeReq({ method = "POST", headers = {}, chunks = [] }) {
   req.method = method;
   req.headers = headers;
   req.destroy = () => { req.destroyed = true; };
+  req.pause = () => { req.paused = true; };
   process.nextTick(() => {
     for (const chunk of chunks) req.emit("data", Buffer.from(chunk));
     if (!req.destroyed) req.emit("end");
@@ -87,6 +89,14 @@ test("safeEqualHex rejects mismatched or missing signatures", () => {
 test("safeEqualHex accepts matching signatures", () => {
   const hex = crypto.createHmac("sha256", "x").update("y").digest("hex");
   assert.equal(safeEqualHex(hex, hex), true);
+});
+
+test("safeEqualHex rejects a signature that isn't exactly 64 hex characters (P2a)", () => {
+  const valid = crypto.createHmac("sha256", "x").update("y").digest("hex");
+  assert.equal(safeEqualHex("abc", valid), false); // too short
+  assert.equal(safeEqualHex(valid + "00", valid), false); // too long
+  assert.equal(safeEqualHex("z".repeat(64), valid), false); // right length, not hex
+  assert.equal(safeEqualHex(valid.slice(0, 63) + "g", valid), false); // one invalid char
 });
 
 test("escapeMarkdown escapes GFM special characters", () => {
@@ -173,6 +183,36 @@ test("buildReadmeUpdate appends a new entry to an existing section", () => {
   assert.equal(second.changed, true);
   assert.match(second.updated, /#evt_1/);
   assert.match(second.updated, /#evt_2/);
+});
+
+test("hasEventId does not false-positive-match a longer id sharing the same prefix (P3)", () => {
+  // Regression test: evt_1 must not be reported as already-present just
+  // because evt_10's entry contains the substring "#evt_1".
+  assert.equal(hasEventId("... #evt_10 ...", "evt_1"), false);
+  assert.equal(hasEventId("... #evt_1 ...", "evt_1"), true);
+  assert.equal(hasEventId("... #evt_1-retry ...", "evt_1"), false);
+  assert.equal(hasEventId("", "evt_1"), false);
+  assert.equal(hasEventId("anything", ""), false);
+});
+
+test("buildReadmeUpdate treats evt_1 and evt_10 as distinct donations (P3)", () => {
+  const withEvt10 = buildReadmeUpdate(
+    "# Repo\n\n## Licence\nMIT\n",
+    { amount: 5, currency: "EUR", supporter_name: "Jean Dupont" },
+    null,
+    "evt_10"
+  );
+  const second = buildReadmeUpdate(
+    withEvt10.updated,
+    { amount: 3, currency: "EUR", supporter_name: "Marie Curie" },
+    null,
+    "evt_1"
+  );
+  // Before the fix this was wrongly treated as a duplicate (changed: false)
+  // because "#evt_1" is a substring of "#evt_10".
+  assert.equal(second.changed, true);
+  assert.match(second.updated, /#evt_10/);
+  assert.match(second.updated, /#evt_1(?!\d)/);
 });
 
 test("buildReadmeUpdate is idempotent for a duplicate event id (dedup)", () => {
@@ -315,6 +355,31 @@ test("handler rejects a body over MAX_BODY_BYTES before touching the signature (
     const res = makeRes();
     await handler(req, res);
     assert.equal(res.statusCode, 413);
+  });
+});
+
+test("handler pauses the request instead of destroying it on oversize (P2b)", async () => {
+  // Regression test: destroy()-ing the request can tear down the
+  // underlying socket before the 413 response is written. Pausing keeps
+  // the connection alive so the response actually reaches the client —
+  // asserting statusCode 413 above only proves our own code *thinks* it
+  // responded; this asserts we no longer use the method that could kill
+  // the connection before that response is sent.
+  await withEnv({ BMC_WEBHOOK_SECRET: SECRET }, async () => {
+    const bigChunk = "a".repeat(MAX_BODY_BYTES + 1024);
+    const req = makeReq({
+      headers: { "x-signature-sha256": "irrelevant" },
+      chunks: [bigChunk],
+    });
+    let destroyed = false;
+    let paused = false;
+    req.destroy = () => { destroyed = true; };
+    req.pause = () => { paused = true; };
+    const res = makeRes();
+    await handler(req, res);
+    assert.equal(res.statusCode, 413);
+    assert.equal(paused, true, "expected req.pause() to be called");
+    assert.equal(destroyed, false, "expected req.destroy() NOT to be called");
   });
 });
 
