@@ -7,12 +7,54 @@ const REPOSITORIES = new Set([
   "recettes-express",
 ]);
 
+// A BMC donation payload is a few hundred bytes. 100 KB leaves generous
+// headroom while refusing to buffer an oversized body in memory before
+// the HMAC signature even gets a chance to reject it.
+const MAX_BODY_BYTES = 100 * 1024;
+
 function readRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
+    let total = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      req.removeListener("data", onData);
+      req.removeListener("end", onEnd);
+      req.removeListener("error", onError);
+    };
+
+    const fail = (err) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(err);
+    };
+
+    const onData = (chunk) => {
+      total += chunk.length;
+      if (total > MAX_BODY_BYTES) {
+        const err = new Error("Payload too large");
+        err.statusCode = 413;
+        if (typeof req.destroy === "function") req.destroy();
+        fail(err);
+        return;
+      }
+      chunks.push(Buffer.from(chunk));
+    };
+
+    const onEnd = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(Buffer.concat(chunks));
+    };
+
+    const onError = (err) => fail(err);
+
+    req.on("data", onData);
+    req.on("end", onEnd);
+    req.on("error", onError);
   });
 }
 
@@ -23,12 +65,21 @@ function safeEqualHex(a, b) {
   return left.length === right.length && crypto.timingSafeEqual(left, right);
 }
 
+// Escapes Markdown/GFM special characters so untrusted text (a donor's
+// display name) can never alter formatting or inject a link/image when
+// dropped into README.md.
+function escapeMarkdown(text) {
+  return String(text).replace(/([\\`*_{}[\]()#+\-.!|<>~])/g, "\\$1");
+}
+
 function anonymizeName(name) {
   const clean = typeof name === "string" ? name.trim() : "";
   if (!clean) return "Anonymous";
   const parts = clean.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) return `${parts[0]} ${parts[1][0]}*****`;
-  return clean[0] + "*****";
+  if (parts.length >= 2) {
+    return `${escapeMarkdown(parts[0])} ${escapeMarkdown(parts[1][0])}*****`;
+  }
+  return `${escapeMarkdown(clean[0])}*****`;
 }
 
 function repoFromReferer(referer) {
@@ -71,7 +122,52 @@ async function bmcGetSupporter(supporterId) {
   return payload?.data || payload?.supporter || payload || null;
 }
 
-async function updateReadme(repo, donation, supporter, eventId) {
+// Pure function: given the current README text, returns the merged text
+// plus whether anything actually changed. Separated from updateReadme()
+// so it can be unit tested without mocking fetch, and so the 409-retry
+// loop can recompute the merge against a freshly re-fetched README.
+function buildReadmeUpdate(current, donation, supporter, eventId) {
+  const markerStart = "<!--START_SECTION:buy-me-a-coffee-->";
+  const markerEnd = "<!--END_SECTION:buy-me-a-coffee-->";
+  const amount = donation.amount ?? supporter?.support_coffee_price ?? "?";
+  const currency = donation.currency ?? supporter?.support_currency ?? "";
+  const name = anonymizeName(
+    donation.supporter_name ||
+    supporter?.supporter_name ||
+    supporter?.payer_name
+  );
+  const createdAt = donation.created_at || supporter?.support_created_on || Date.now();
+  const date = new Date(
+    typeof createdAt === "number" ? createdAt * 1000 : createdAt
+  ).toISOString().slice(0, 10);
+
+  const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
+  const block = `${markerStart}\n${entry}\n${markerEnd}`;
+
+  const start = current.indexOf(markerStart);
+  const end = current.indexOf(markerEnd);
+
+  if (start >= 0 && end >= start) {
+    const existing = current.slice(start, end);
+    if (eventId && existing.includes("#" + eventId)) {
+      return { updated: current, changed: false };
+    }
+    return {
+      updated: current.slice(0, end) + "\n" + entry + current.slice(end),
+      changed: true,
+    };
+  }
+
+  const section = `\n\n<div align="center">\n\n### ☕ Merci aux donateurs\n\n${block}\n\n</div>\n`;
+  const licence = current.search(/^##? Licence$/mi);
+  const updated = licence >= 0
+    ? current.slice(0, licence) + section + "\n" + current.slice(licence)
+    : current.trimEnd() + section;
+  return { updated, changed: updated !== current };
+}
+
+async function updateReadme(repo, donation, supporter, eventId, attempt = 0) {
+  const MAX_ATTEMPTS = 3;
   const token = process.env.GITHUB_TOKEN;
   if (!token) throw new Error("GITHUB_TOKEN is not configured");
 
@@ -90,51 +186,30 @@ async function updateReadme(repo, donation, supporter, eventId) {
   const file = await readmeResponse.json();
   const current = Buffer.from(file.content.replace(/\s/g, ""), "base64").toString("utf8");
 
-  const markerStart = "<!--START_SECTION:buy-me-a-coffee-->";
-  const markerEnd = "<!--END_SECTION:buy-me-a-coffee-->";
-  const amount = donation.amount ?? supporter?.support_coffee_price ?? "?";
-  const currency = donation.currency ?? supporter?.support_currency ?? "";
-  const name = anonymizeName(
-    donation.supporter_name ||
-    supporter?.supporter_name ||
-    supporter?.payer_name
-  );
-  const createdAt = donation.created_at || supporter?.support_created_on || Date.now();
-  const date = new Date(
-    typeof createdAt === "number" ? createdAt * 1000 : createdAt
-  ).toISOString().slice(0, 10);
-
-  const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
-  const block = `${markerStart}\n${entry}\n${markerEnd}`;
-
-  let updated;
-  const start = current.indexOf(markerStart);
-  const end = current.indexOf(markerEnd);
-
-  if (start >= 0 && end >= start) {
-    const existing = current.slice(start, end);
-    if (eventId && existing.includes("#" + eventId)) return { updated: false };
-    updated = current.slice(0, end) + "\n" + entry + current.slice(end);
-  } else {
-    const section = `\n\n<div align="center">\n\n### ☕ Merci aux donateurs\n\n${block}\n\n</div>\n`;
-    const licence = current.search(/^##? Licence$/mi);
-    updated = licence >= 0
-      ? current.slice(0, licence) + section + "\n" + current.slice(licence)
-      : current.trimEnd() + section;
-  }
-
-  if (updated === current) return { updated: false };
+  const { updated, changed } = buildReadmeUpdate(current, donation, supporter, eventId);
+  if (!changed) return { updated: false };
 
   const putResponse = await fetch(apiUrl, {
     method: "PUT",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify({
-      message: `chore: add Buy Me A Coffee supporter`,
+      message: "chore: add Buy Me A Coffee supporter",
       content: Buffer.from(updated, "utf8").toString("base64"),
       sha: file.sha,
       branch: "main",
     }),
   });
+
+  if (putResponse.status === 409) {
+    // Another donation's write landed between our GET and PUT, so our sha
+    // is stale. Re-fetch the README and retry the merge instead of
+    // failing the whole webhook (and silently dropping the donor entry).
+    if (attempt < MAX_ATTEMPTS - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+      return updateReadme(repo, donation, supporter, eventId, attempt + 1);
+    }
+    throw new Error(`GitHub README PUT returned HTTP 409 after ${MAX_ATTEMPTS} attempts`);
+  }
 
   if (!putResponse.ok) {
     const body = await putResponse.text();
@@ -210,6 +285,9 @@ module.exports = async function handler(req, res) {
       updated: result.updated,
     });
   } catch (error) {
+    if (error && error.statusCode === 413) {
+      return res.status(413).json({ error: "Payload too large" });
+    }
     console.error("BMC webhook error", error);
     return res.status(500).json({ error: "Webhook processing failed" });
   }
@@ -217,4 +295,17 @@ module.exports = async function handler(req, res) {
 
 module.exports.config = {
   api: { bodyParser: false },
+};
+
+// Exposed for unit testing only — not part of the HTTP contract Vercel calls.
+module.exports._internal = {
+  readRawBody,
+  safeEqualHex,
+  escapeMarkdown,
+  anonymizeName,
+  repoFromReferer,
+  buildReadmeUpdate,
+  updateReadme,
+  MAX_BODY_BYTES,
+  REPOSITORIES,
 };
