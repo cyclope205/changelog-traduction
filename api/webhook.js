@@ -151,6 +151,38 @@ function hasEventId(sectionText, eventId) {
   return pattern.test(sectionText);
 }
 
+// Same as `new Date(createdAt).toISOString().slice(0, 10)`, but never
+// throws. An unparsable `created_at` (bad data from BMC, or a supporter
+// record with a malformed date) would otherwise make Date#toISOString
+// raise a RangeError that propagates all the way to the handler's catch
+// block as an HTTP 500 — losing the donation instead of just recording it
+// under today's date.
+function safeDateSlice(createdAt) {
+  const raw = typeof createdAt === "number" ? createdAt * 1000 : createdAt;
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+// Donations should always carry a BMC event_id, but we don't control BMC's
+// payload — if one is ever missing, hasEventId() would never match
+// anything (see its early `if (!eventId) return false`), so a redelivered
+// webhook (BMC retries are at-least-once) would duplicate the entry in the
+// README on every retry. Falling back to a stable synthetic id derived
+// from fields that are themselves stable across redeliveries of the same
+// event (supporter + amount + day) keeps dedup working even without a
+// real event_id, without silently dropping or rejecting the donation.
+function resolveDedupId(donation, supporter, eventId) {
+  if (eventId) return String(eventId);
+  const supporterId = donation.supporter_id || supporter?.supporter_id || supporter?.id || "unknown";
+  const amount = donation.amount ?? supporter?.support_coffee_price ?? "0";
+  const createdAt = donation.created_at || supporter?.support_created_on || Date.now();
+  const day = safeDateSlice(createdAt);
+  return `fallback-${supporterId}-${amount}-${day}`;
+}
+
 // Pure function: given the current README text, returns the merged text
 // plus whether anything actually changed. Separated from updateReadme()
 // so it can be unit tested without mocking fetch, and so the 409-retry
@@ -166,9 +198,7 @@ function buildReadmeUpdate(current, donation, supporter, eventId) {
     supporter?.payer_name
   );
   const createdAt = donation.created_at || supporter?.support_created_on || Date.now();
-  const date = new Date(
-    typeof createdAt === "number" ? createdAt * 1000 : createdAt
-  ).toISOString().slice(0, 10);
+  const date = safeDateSlice(createdAt);
 
   const entry = `- ☕ **${name}** — ${amount} ${currency} (${date})${eventId ? ` — #${eventId}` : ""}`;
   const block = `${markerStart}\n${entry}\n${markerEnd}`;
@@ -297,10 +327,12 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const result = await updateReadme(repo, donation, supporter, event.event_id);
+    const dedupId = resolveDedupId(donation, supporter, event.event_id);
+    const result = await updateReadme(repo, donation, supporter, dedupId);
 
     console.log("BMC donation attributed", {
       event_id: event.event_id,
+      dedup_id: dedupId,
       supporter_id: supporterId,
       repo,
       updated: result.updated,
@@ -333,6 +365,8 @@ module.exports._internal = {
   escapeMarkdown,
   escapeRegExp,
   hasEventId,
+  safeDateSlice,
+  resolveDedupId,
   anonymizeName,
   repoFromReferer,
   buildReadmeUpdate,
