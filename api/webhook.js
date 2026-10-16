@@ -36,7 +36,12 @@ function readRawBody(req) {
       if (total > MAX_BODY_BYTES) {
         const err = new Error("Payload too large");
         err.statusCode = 413;
-        if (typeof req.destroy === "function") req.destroy();
+        // Pause instead of destroy(): destroying the request can tear down
+        // the underlying socket before the 413 response gets a chance to
+        // be written, leaving the client with a reset connection instead
+        // of an actual error response. Pausing just stops us consuming
+        // more of the body while the socket (and the response) stay alive.
+        if (typeof req.pause === "function") req.pause();
         fail(err);
         return;
       }
@@ -58,8 +63,17 @@ function readRawBody(req) {
   });
 }
 
+const HEX_64_RE = /^[0-9a-fA-F]{64}$/;
+
 function safeEqualHex(a, b) {
   if (!a || !b) return false;
+  // Reject anything that isn't exactly 64 hex characters (a SHA-256 HMAC
+  // digest) before decoding. Buffer.from(str, "hex") silently truncates
+  // at the first invalid pair instead of throwing, so without this check
+  // a malformed signature could decode to an unexpected byte length. The
+  // length comparison below already prevents that from being exploitable,
+  // but validating the format first is the correct, defensive order.
+  if (!HEX_64_RE.test(String(a)) || !HEX_64_RE.test(String(b))) return false;
   const left = Buffer.from(String(a), "hex");
   const right = Buffer.from(String(b), "hex");
   return left.length === right.length && crypto.timingSafeEqual(left, right);
@@ -122,6 +136,21 @@ async function bmcGetSupporter(supporterId) {
   return payload?.data || payload?.supporter || payload || null;
 }
 
+function escapeRegExp(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// True if `sectionText` already records donation `eventId`. Uses a regex
+// with a negative lookahead instead of String#includes so that "evt_1"
+// cannot false-positive-match inside "evt_10", "evt_123", etc. — a plain
+// substring check would wrongly treat a later, distinct donation as a
+// duplicate and silently drop it from the README.
+function hasEventId(sectionText, eventId) {
+  if (!eventId) return false;
+  const pattern = new RegExp(`#${escapeRegExp(eventId)}(?![\\w-])`);
+  return pattern.test(sectionText);
+}
+
 // Pure function: given the current README text, returns the merged text
 // plus whether anything actually changed. Separated from updateReadme()
 // so it can be unit tested without mocking fetch, and so the 409-retry
@@ -149,7 +178,7 @@ function buildReadmeUpdate(current, donation, supporter, eventId) {
 
   if (start >= 0 && end >= start) {
     const existing = current.slice(start, end);
-    if (eventId && existing.includes("#" + eventId)) {
+    if (hasEventId(existing, eventId)) {
       return { updated: current, changed: false };
     }
     return {
@@ -302,6 +331,8 @@ module.exports._internal = {
   readRawBody,
   safeEqualHex,
   escapeMarkdown,
+  escapeRegExp,
+  hasEventId,
   anonymizeName,
   repoFromReferer,
   buildReadmeUpdate,
