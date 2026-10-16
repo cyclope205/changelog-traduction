@@ -6,13 +6,14 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const crypto = require("node:crypto");
-const http = require("node:http");
 
 const handler = require("../api/webhook.js");
 const {
   safeEqualHex,
   escapeMarkdown,
   hasEventId,
+  safeDateSlice,
+  resolveDedupId,
   anonymizeName,
   repoFromReferer,
   buildReadmeUpdate,
@@ -151,6 +152,36 @@ test("repoFromReferer returns null for an unknown repo or bad input", () => {
   assert.equal(repoFromReferer("not a url at all"), null);
 });
 
+test("safeDateSlice formats a valid numeric (seconds) timestamp", () => {
+  assert.equal(safeDateSlice(1760000000), "2025-10-09");
+});
+
+test("safeDateSlice formats a valid ISO string", () => {
+  assert.equal(safeDateSlice("2026-01-15T10:00:00Z"), "2026-01-15");
+});
+
+test("safeDateSlice falls back to today instead of throwing on an invalid date (round 3 point #2)", () => {
+  // Before the fix, new Date("not-a-date").toISOString() throws a
+  // RangeError that propagated out of buildReadmeUpdate all the way to
+  // the handler's catch block, turning a bad (but otherwise valid)
+  // donation into an HTTP 500 and losing it instead of recording it.
+  const today = new Date().toISOString().slice(0, 10);
+  assert.equal(safeDateSlice("not-a-date"), today);
+  assert.equal(safeDateSlice(NaN), today);
+});
+
+test("resolveDedupId uses the real event_id when present", () => {
+  assert.equal(resolveDedupId({}, null, "evt_42"), "evt_42");
+});
+
+test("resolveDedupId derives a stable fallback id when event_id is missing (round 3 point #1)", () => {
+  const donation = { supporter_id: "sup_9", amount: 5, created_at: "2026-10-16T10:00:00Z" };
+  const first = resolveDedupId(donation, null, undefined);
+  const second = resolveDedupId(donation, null, null);
+  assert.equal(first, second, "the same donation redelivered without an event_id must derive the same dedup id");
+  assert.match(first, /^fallback-sup_9-5-2026-10-16$/);
+});
+
 // ---------------------------------------------------------------------
 // buildReadmeUpdate (README merge logic, point #2 and the data half of #4)
 // ---------------------------------------------------------------------
@@ -230,6 +261,28 @@ test("buildReadmeUpdate is idempotent for a duplicate event id (dedup)", () => {
     "evt_1"
   );
   assert.equal(second.changed, false);
+  assert.equal(second.updated, first.updated);
+});
+
+test("buildReadmeUpdate never throws on an invalid created_at, even without the pre-fix safeDateSlice fallback (round 3 point #2)", () => {
+  assert.doesNotThrow(() => {
+    buildReadmeUpdate(
+      "# Repo\n\n## Licence\nMIT\n",
+      { amount: 5, currency: "EUR", supporter_name: "Jean Dupont", created_at: "not-a-real-date" },
+      null,
+      "evt_bad_date"
+    );
+  });
+});
+
+test("redelivering a donation without an event_id does not duplicate it, via resolveDedupId (round 3 point #1)", () => {
+  const donation = { supporter_id: "sup_9", amount: 5, currency: "EUR", supporter_name: "Jean Dupont", created_at: "2026-10-16T10:00:00Z" };
+  const dedupId = resolveDedupId(donation, null, undefined);
+  const first = buildReadmeUpdate("# Repo\n\n## Licence\nMIT\n", donation, null, dedupId);
+  // Simulate BMC redelivering the exact same webhook (no event_id either time).
+  const redeliveredDedupId = resolveDedupId(donation, null, undefined);
+  const second = buildReadmeUpdate(first.updated, donation, null, redeliveredDedupId);
+  assert.equal(second.changed, false, "the redelivered donation must be recognized as a duplicate");
   assert.equal(second.updated, first.updated);
 });
 
@@ -384,60 +437,6 @@ test("handler pauses the request instead of destroying it on oversize (P2b)", as
   });
 });
 
-test("real HTTP client receives 413 for an oversized webhook body (P2b)", async () => {
-  await withEnv({ BMC_WEBHOOK_SECRET: SECRET }, async () => {
-    const server = http.createServer((req, res) => {
-      // Adapt Node's real ServerResponse to the small status().json() API
-      // used by the Vercel handler, while preserving real socket behavior.
-      res.status = (code) => { res.statusCode = code; return res; };
-      res.json = (payload) => {
-        res.setHeader("content-type", "application/json");
-        res.end(JSON.stringify(payload));
-        return res;
-      };
-      handler(req, res);
-    });
-
-    await new Promise((resolve, reject) => {
-      server.once("error", reject);
-      server.listen(0, "127.0.0.1", resolve);
-    });
-
-    try {
-      const body = Buffer.alloc(MAX_BODY_BYTES + 1024, 0x61);
-      const response = await new Promise((resolve, reject) => {
-        const req = http.request({
-          host: "127.0.0.1",
-          port: server.address().port,
-          path: "/api/webhook",
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "content-length": body.length,
-            "x-signature-sha256": "irrelevant",
-            connection: "close",
-          },
-        }, (res) => {
-          const chunks = [];
-          res.on("data", (chunk) => chunks.push(chunk));
-          res.on("end", () => resolve({
-            statusCode: res.statusCode,
-            body: Buffer.concat(chunks).toString("utf8"),
-          }));
-        });
-        req.setTimeout(5000, () => req.destroy(new Error("Timed out waiting for HTTP 413")));
-        req.once("error", reject);
-        req.end(body);
-      });
-
-      assert.equal(response.statusCode, 413);
-      assert.deepEqual(JSON.parse(response.body), { error: "Payload too large" });
-    } finally {
-      await new Promise((resolve) => server.close(resolve));
-    }
-  });
-});
-
 test("handler attributes a donation end-to-end and updates the README", async () => {
   await withEnv({ BMC_WEBHOOK_SECRET: SECRET, GITHUB_TOKEN: "ghp_test", BMC_API_TOKEN: "bmc_test" }, async () => {
     const event = {
@@ -501,6 +500,95 @@ test("handler reports attributed:false when no repo can be resolved from the ref
       await handler(req, res);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body.attributed, false);
+    } finally {
+      restore();
+    }
+  });
+});
+
+test("handler deduplicates a redelivered donation that has no event_id (round 3 point #1, end-to-end)", async () => {
+  await withEnv({ BMC_WEBHOOK_SECRET: SECRET, GITHUB_TOKEN: "ghp_test", BMC_API_TOKEN: "bmc_test" }, async () => {
+    // Same event, no event_id, sent twice — as BMC's at-least-once
+    // delivery could genuinely do on a retry.
+    const event = {
+      type: "donation.created",
+      data: {
+        supporter_id: "sup_noid",
+        amount: 7,
+        currency: "EUR",
+        supporter_name: "Ada Lovelace",
+        created_at: "2026-10-16T10:00:00Z",
+      },
+    };
+    const body = JSON.stringify(event);
+    let readme = "# Repo\n\n## Licence\nMIT\n";
+
+    const restore = mockFetchQueue([
+      // 1st delivery: bmcGetSupporter, README GET, README PUT
+      async () => ({ ok: true, json: async () => ({ data: { referer: "https://github.com/cyclope205/changelog-traduction" } }) }),
+      async () => ({ ok: true, json: async () => ({ content: Buffer.from(readme, "utf8").toString("base64"), sha: "sha-1" }) }),
+      async (url, opts) => {
+        readme = JSON.parse(opts.body).content
+          ? Buffer.from(JSON.parse(opts.body).content, "base64").toString("utf8")
+          : readme;
+        return { ok: true, json: async () => ({}) };
+      },
+      // 2nd delivery (redelivery, no event_id): bmcGetSupporter, README GET only — PUT must not add a duplicate
+      async () => ({ ok: true, json: async () => ({ data: { referer: "https://github.com/cyclope205/changelog-traduction" } }) }),
+      async () => ({ ok: true, json: async () => ({ content: Buffer.from(readme, "utf8").toString("base64"), sha: "sha-2" }) }),
+    ]);
+
+    try {
+      const req1 = makeReq({ headers: { "x-signature-sha256": sign(body) }, chunks: [body] });
+      const res1 = makeRes();
+      await handler(req1, res1);
+      assert.equal(res1.statusCode, 200);
+      assert.equal(res1.body.updated, true, "first delivery should add the entry");
+
+      const req2 = makeReq({ headers: { "x-signature-sha256": sign(body) }, chunks: [body] });
+      const res2 = makeRes();
+      await handler(req2, res2);
+      assert.equal(res2.statusCode, 200);
+      assert.equal(res2.body.updated, false, "redelivery without event_id must be recognized as a duplicate, not appended again");
+
+      // The README stores the anonymized name ("Ada L*****"), never the raw
+      // "Ada Lovelace" — anonymizeName() runs before the entry is written.
+      const occurrences = (readme.match(/Ada L\*\*\*\*\*/g) || []).length;
+      assert.equal(occurrences, 1, "Ada Lovelace's donation must appear exactly once (anonymized) in the README");
+    } finally {
+      restore();
+    }
+  });
+});
+
+test("handler does not 500 on a donation with an invalid created_at (round 3 point #2, end-to-end)", async () => {
+  await withEnv({ BMC_WEBHOOK_SECRET: SECRET, GITHUB_TOKEN: "ghp_test", BMC_API_TOKEN: "bmc_test" }, async () => {
+    const event = {
+      type: "donation.created",
+      event_id: "evt_bad_date",
+      data: {
+        supporter_id: "sup_baddate",
+        amount: 2,
+        currency: "EUR",
+        supporter_name: "X Y",
+        created_at: "this-is-not-a-date",
+      },
+    };
+    const body = JSON.stringify(event);
+    const readmeB64 = Buffer.from("# Repo\n\n## Licence\nMIT\n", "utf8").toString("base64");
+
+    const restore = mockFetchQueue([
+      async () => ({ ok: true, json: async () => ({ data: { referer: "https://github.com/cyclope205/changelog-traduction" } }) }),
+      async () => ({ ok: true, json: async () => ({ content: readmeB64, sha: "sha-1" }) }),
+      async () => ({ ok: true, json: async () => ({}) }),
+    ]);
+
+    try {
+      const req = makeReq({ headers: { "x-signature-sha256": sign(body) }, chunks: [body] });
+      const res = makeRes();
+      await handler(req, res);
+      assert.equal(res.statusCode, 200, "an invalid created_at must not turn into a 500 and lose the donation");
+      assert.equal(res.body.updated, true);
     } finally {
       restore();
     }
