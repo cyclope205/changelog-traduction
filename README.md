@@ -108,8 +108,8 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Installation
 
-**Via HACS (custom repository):**
-1. Add this repository to HACS:
+**Via HACS:**
+1. In HACS, search for "Changelog Traduction" and install it — it's part of the HACS default store, no need to add a custom repository.
 
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
 
@@ -208,8 +208,8 @@ See [LICENSE](LICENSE).
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### Installation
 
-**Via HACS (dépôt personnalisé) :**
-1. Ajouter ce dépôt à HACS :
+**Via HACS :**
+1. Dans HACS, recherche « Changelog Traduction » et installe-la — elle fait partie du dépôt HACS par défaut, plus besoin d'ajouter de dépôt personnalisé.
 
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
 
