@@ -26,6 +26,10 @@ def run(coro):
 def _make_hass(*, side_effect=None, return_value=None):
     hass = MagicMock()
     hass.services.async_call = AsyncMock(side_effect=side_effect, return_value=return_value)
+    # No entity registered under ai_task_entity in these tests, so
+    # _describe_ai_task_failure's provider lookup falls back to the raw
+    # entity id (e.g. "ai_task.gemini") instead of a Mock object repr.
+    hass.states.get = MagicMock(return_value=None)
     return hass
 
 
@@ -103,7 +107,7 @@ def test_normal_mode_ai_empty_response_uses_translation_failed_fallback():
             "some changelog text", "en",
         )
     )
-    assert result == "Some Integration: update available (automatic translation failed)."
+    assert result == "Some Integration: update available (automatic translation failed - ai_task.gemini)."
 
 
 def test_alert_mode_breaking_with_empty_summary_uses_translation_failed_fallback():
@@ -119,7 +123,7 @@ def test_alert_mode_breaking_with_empty_summary_uses_translation_failed_fallback
             hass, _alert_mode_options(), "Some Integration", "some changelog text", "en"
         )
     )
-    assert result == "Some Integration: update available (automatic translation failed)."
+    assert result == "Some Integration: update available (automatic translation failed - ai_task.gemini)."
 
 
 
@@ -272,4 +276,4 @@ def test_normal_mode_ai_task_exception_uses_translation_failed_fallback():
             "some changelog text", "en",
         )
     )
-    assert result == "Some Integration: update available (automatic translation failed)."
+    assert result == "Some Integration: update available (automatic translation failed - ai_task.gemini: AI Task unavailable)."
