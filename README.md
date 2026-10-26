@@ -11,7 +11,6 @@
 [![Stars](https://img.shields.io/github/stars/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/stargazers)
 [![Forks](https://img.shields.io/github/forks/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/network/members)
 
-<img src="https://raw.githubusercontent.com/cyclope205/changelog-traduction/main/custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="96">
 
 ---
 
