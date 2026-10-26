@@ -11,6 +11,8 @@
 [![Stars](https://img.shields.io/github/stars/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/stargazers)
 [![Forks](https://img.shields.io/github/forks/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/network/members)
 
+<img src="https://raw.githubusercontent.com/cyclope205/changelog-traduction/main/custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="96">
+
 ---
 
 ### ❤️ Sponsors GitHub
@@ -28,7 +30,7 @@
 
 <!--START_SECTION:buy-me-a-coffee-->
 <div>
-<img src="https://github.com/akosbalasko/coffee-to-file/blob/main/assets/bmc-logo.png?raw=true" width="30"> from <b>christophe b*****</b>
+<img src="https://raw.githubusercontent.com/akosbalasko/coffee-to-file/main/assets/bmc-logo.png" width="30"> from <b>christophe b*****</b>
 </div>
 <div><i>De la bombe !!!!</i></div>
 <!--END_SECTION:buy-me-a-coffee-->
@@ -72,28 +74,28 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 
 **1. Look for the integration under Devices and Services**
 
-<img width="727" height="292" alt="Capture d'écran 2026-08-27 102305" src="https://github.com/user-attachments/assets/fcdd0ebc-1356-4667-b640-7c6de0cd6137" />
+<img alt="Capture d'écran 2026-08-27 102305" src="https://github.com/user-attachments/assets/fcdd0ebc-1356-4667-b640-7c6de0cd6137" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configure the integration**
 
-<img width="1332" height="813" alt="Capture d'écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" />
+<img alt="Capture d'écran 2026-08-26 231642" src="https://github.com/user-attachments/assets/bf104c12-3c7a-49b4-b826-9c82a74cce05" width="600" />
 
-<img width="716" height="701" alt="Capture d'écran 2026-08-31 104013" src="https://github.com/user-attachments/assets/89cf4017-2699-4d89-b32e-9cae4e18773e" />
+<img alt="Capture d'écran 2026-08-31 104013" src="https://github.com/user-attachments/assets/89cf4017-2699-4d89-b32e-9cae4e18773e" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Native Home Assistant notifications**
 
-<img width="1320" height="850" alt="IMG_7120" src="https://github.com/user-attachments/assets/075afe04-1fef-4f2e-bd43-4b0fc38da897" />
+<img alt="IMG_7120" src="https://github.com/user-attachments/assets/075afe04-1fef-4f2e-bd43-4b0fc38da897" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **4. Detailed notifications by Changelog Traduction**
 
-<img width="1298" height="1179" alt="IMG_7121" src="https://github.com/user-attachments/assets/7dc8f288-38c3-4510-b690-70ea7545f7ad" />
+<img alt="IMG_7121" src="https://github.com/user-attachments/assets/7dc8f288-38c3-4510-b690-70ea7545f7ad" width="600" />
 
 **New: categorized format (🆕 New / 🔧 Fixes / ⚠️ Breaking changes), with an optional version line.**
 
-<img width="640" height="470" alt="Categorized notification example" src="https://github.com/user-attachments/assets/bfa37bef-c606-4459-9104-e5a5e691838e" />
+<img alt="Categorized notification example" src="https://github.com/user-attachments/assets/bfa37bef-c606-4459-9104-e5a5e691838e" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -178,28 +180,28 @@ See [LICENSE](LICENSE).
 
 **1. Integration a chercher dans appareils et services**
 
-<img width="727" height="292" alt="image" src="https://github.com/user-attachments/assets/290706e7-dee2-4523-b8cd-2634578202b8" />
+<img alt="image" src="https://github.com/user-attachments/assets/290706e7-dee2-4523-b8cd-2634578202b8" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **2. Configuration de l'intégration**
 
-<img width="727" height="771" alt="image" src="https://github.com/user-attachments/assets/9dd24406-c0b7-4752-ac3d-bf943cd33b19" />
+<img alt="image" src="https://github.com/user-attachments/assets/9dd24406-c0b7-4752-ac3d-bf943cd33b19" width="600" />
 
-<img width="730" height="776" alt="Capture d'écran 2026-08-31 103333" src="https://github.com/user-attachments/assets/794b86dd-79b1-4cb6-aa6a-ed09afc7c422" />
+<img alt="Capture d'écran 2026-08-31 103333" src="https://github.com/user-attachments/assets/794b86dd-79b1-4cb6-aa6a-ed09afc7c422" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **3. Notifications natives Home Assistant**
 
-<img width="390" height="290" alt="image" src="https://github.com/user-attachments/assets/279fcc77-280b-4e78-a852-ff2c7fa26834" />
+<img alt="image" src="https://github.com/user-attachments/assets/279fcc77-280b-4e78-a852-ff2c7fa26834" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **4. Notifications détaillées par Changelog Traduction**
 
-<img width="390" height="292" alt="image" src="https://github.com/user-attachments/assets/24330d5d-e3c8-45a3-bcdd-71d3d031bbd0" />
+<img alt="image" src="https://github.com/user-attachments/assets/24330d5d-e3c8-45a3-bcdd-71d3d031bbd0" width="600" />
 
 **Nouveau : format catégorisé (🆕 Nouveautés / 🔧 Corrections / ⚠️ Breaking changes), avec ligne de version optionnelle.**
 
-<img width="640" height="470" alt="Exemple de notification catégorisée" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" />
+<img alt="Exemple de notification catégorisée" src="https://github.com/user-attachments/assets/387b6e1b-b6e1-4a60-bd45-f1386c8402a5" width="600" />
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
