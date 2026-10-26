@@ -137,22 +137,22 @@ FALLBACK_STRINGS: dict[str, dict[str, str]] = {
     "en": {
         "notif_title": "Update: {title}",
         "no_changelog": "Update available for {title}{version} - release notes unavailable for this source.",
-        "translation_failed": "{title}: update available (automatic translation failed).",
+        "translation_failed": "{title}: update available (automatic translation failed - {reason}).",
     },
     "fr": {
         "notif_title": "Mise à jour : {title}",
         "no_changelog": "Mise à jour disponible pour {title}{version} — notes de version non disponibles pour cette source.",
-        "translation_failed": "{title} : mise à jour disponible (échec de la traduction automatique).",
+        "translation_failed": "{title} : mise à jour disponible (traduction automatique indisponible — {reason}).",
     },
     "de": {
         "notif_title": "Update: {title}",
         "no_changelog": "Update verfügbar für {title}{version} - Versionshinweise für diese Quelle nicht verfügbar.",
-        "translation_failed": "{title}: Update verfügbar (automatische Übersetzung fehlgeschlagen).",
+        "translation_failed": "{title}: Update verfügbar (automatische Übersetzung fehlgeschlagen - {reason}).",
     },
     "es": {
         "notif_title": "Actualización: {title}",
         "no_changelog": "Actualización disponible para {title}{version}: notas de la versión no disponibles para esta fuente.",
-        "translation_failed": "{title}: actualización disponible (fallo la traducción automática).",
+        "translation_failed": "{title}: actualización disponible (fallo la traducción automática - {reason}).",
     },
 }
 
@@ -605,6 +605,26 @@ async def _fetch_html_page_text(hass: HomeAssistant, url: str) -> str | None:
     return text or None
 
 
+def _describe_ai_task_failure(hass: HomeAssistant, ai_task_entity: str | None, err: Exception) -> str:
+    """Build a short, human-readable reason for an AI Task failure.
+
+    Includes the AI Task entity's own friendly name (e.g. "Google
+    Generative AI Task") so the user can tell at a glance which provider
+    is responsible, plus a short excerpt of the actual error - not the
+    full traceback (which can be a multi-line JSON blob for some
+    providers), just enough to be useful in a push notification.
+    """
+    provider = ai_task_entity or "?"
+    if ai_task_entity:
+        state = hass.states.get(ai_task_entity)
+        if state is not None:
+            provider = state.attributes.get("friendly_name") or ai_task_entity
+    detail = re.sub(r"\s+", " ", str(err)).strip()
+    if len(detail) > 120:
+        detail = detail[:117] + "..."
+    return f"{provider}: {detail}" if detail else provider
+
+
 async def _translate_changelog(
     hass: HomeAssistant,
     options: dict[str, Any],
@@ -695,7 +715,7 @@ async def _translate_changelog(
             return (
                 str(summary).strip()
                 if summary
-                else _fallback(lang, "translation_failed", title=title)
+                else _fallback(lang, "translation_failed", title=title, reason=(hass.states.get(ai_task_entity).attributes.get("friendly_name") if ai_task_entity and hass.states.get(ai_task_entity) else (ai_task_entity or "?")))
             )
         except Exception as err:  # noqa: BLE001
             _LOGGER.warning(
@@ -780,7 +800,7 @@ async def _translate_changelog(
             # The AI Task call succeeded but didn't return the expected
             # structured shape at all - genuinely nothing usable to show,
             # same "translation_failed" wording as an outright exception.
-            return _fallback(lang, "translation_failed", title=title)
+            return _fallback(lang, "translation_failed", title=title, reason=(hass.states.get(ai_task_entity).attributes.get("friendly_name") if ai_task_entity and hass.states.get(ai_task_entity) else (ai_task_entity or "?")))
         # A well-formed response with all three lists empty is a
         # legitimate result (e.g. a release that's purely internal
         # refactoring/CI with nothing user-facing to report), not a
@@ -795,7 +815,10 @@ async def _translate_changelog(
         )
     except Exception as err:  # noqa: BLE001
         _LOGGER.warning("AI Task translation failed for %s: %s", title, err)
-        return _fallback(lang, "translation_failed", title=title)
+        return _fallback(
+            lang, "translation_failed", title=title,
+            reason=_describe_ai_task_failure(hass, ai_task_entity, err),
+        )
 
 
 async def _deliver(
