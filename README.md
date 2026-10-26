@@ -5,7 +5,7 @@
 [![Build](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/validate.yml)
 [![Tests](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml/badge.svg)](https://github.com/cyclope205/changelog-traduction/actions/workflows/tests.yml)
 [![Issues](https://img.shields.io/github/issues/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/issues)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/cyclope205/changelog-traduction/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/cyclope205/changelog-traduction/total)](https://github.com/cyclope205/changelog-traduction/releases)
 [![Downloads latest](https://img.shields.io/github/downloads/cyclope205/changelog-traduction/latest/total)](https://github.com/cyclope205/changelog-traduction/releases/latest)
 [![Stars](https://img.shields.io/github/stars/cyclope205/changelog-traduction)](https://github.com/cyclope205/changelog-traduction/stargazers)
@@ -153,7 +153,7 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### License
 
-See [LICENSE](LICENSE).
+See [LICENSE](https://github.com/cyclope205/changelog-traduction/blob/main/LICENSE).
 
 ---
 
@@ -254,6 +254,6 @@ See [LICENSE](LICENSE).
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Licence
 
-Voir [LICENSE](LICENSE).
+Voir [LICENSE](https://github.com/cyclope205/changelog-traduction/blob/main/LICENSE).
 
 ---
