@@ -38,7 +38,7 @@
 ---
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-cyclope205-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://bmc-eight-red.vercel.app/api/donate?repo=changelog-traduction) [![PayPal](https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://bmc-eight-red.vercel.app/api/paypal?repo=changelog-traduction&amount=5)
-<img src="custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="80">
+<img src="https://raw.githubusercontent.com/cyclope205/changelog-traduction/main/custom_components/changelog_traduction/brand/logo.png" alt="Changelog Traduction" width="80">
 
 ### ☕ Offrez-moi un café pour m'aider à rester éveillé et coder vos intégrations préférées !
 
