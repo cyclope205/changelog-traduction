@@ -226,6 +226,7 @@ See [LICENSE](https://github.com/cyclope205/changelog-traduction/blob/main/LICEN
 1. Ouvrir le dépôt dans HACS et l'installer :
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
       [![Ouvrir dans Marketplace](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+   
    ou cherche « Changelog Traduction » dans HACS.
 3. Redémarre Home Assistant.
 4. Ajoute l'intégration :
