@@ -119,16 +119,17 @@ A Home Assistant custom integration that watches your `update.*` entities and, w
 1. Open the repository in HACS and install it:
 
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+      [![Open in Marketplace](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
 
    or search for "Changelog Traduction" in HACS.
-2. Restart Home Assistant.
-3. Add the integration:
+3. Restart Home Assistant.
+4. Add the integration:
 
    [![Open your Home Assistant instance and show the add integration dialog with a specific integration pre-selected.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=changelog_traduction)
 
    or Settings → Devices & services → Add integration → search "Changelog Traduction".
 
-4. Pick your notification entity and your AI Task entity. The language field defaults to Home Assistant's own interface language - leave it as pre-filled to follow it automatically, or pick a different one explicitly in the config screen.
+5. Pick your notification entity and your AI Task entity. The language field defaults to Home Assistant's own interface language - leave it as pre-filled to follow it automatically, or pick a different one explicitly in the config screen.
 
 **Manual installation:**
 1. Copy the `custom_components/changelog_traduction/` folder into your `config/custom_components/` directory.
@@ -224,12 +225,13 @@ See [LICENSE](https://github.com/cyclope205/changelog-traduction/blob/main/LICEN
 **Via HACS :**
 1. Ouvrir le dépôt dans HACS et l'installer :
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
+      [![Ouvrir dans Marketplace](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=cyclope205&repository=changelog-traduction&category=integration)
    ou cherche « Changelog Traduction » dans HACS.
-2. Redémarre Home Assistant.
-3. Ajoute l'intégration :
+3. Redémarre Home Assistant.
+4. Ajoute l'intégration :
    [![Open your Home Assistant instance and show the add integration dialog with a specific integration pre-selected.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=changelog_traduction)
    ou Paramètres → Appareils et services → Ajouter une intégration → cherche "Changelog Traduction".
-4. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement dans l'écran de configuration.
+5. Choisis ton entité de notification et ton entité AI Task. Le champ langue est pré-rempli avec la langue de l'interface HA - laisse-le tel quel pour la suivre automatiquement, ou choisis-en une autre explicitement dans l'écran de configuration.
 
 **Installation manuelle:**
 1. Copie le dossier `custom_components/changelog_traduction/` dans ton dossier `config/custom_components/`.
