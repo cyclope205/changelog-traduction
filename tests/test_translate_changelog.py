@@ -267,8 +267,8 @@ def test_normal_mode_ai_task_exception_uses_translation_failed_fallback():
     # Normal mode has no UNKNOWN-sentinel concept (that's alert-mode-only,
     # since only alert mode's "mark as seen" decision depends on telling
     # a failure apart from a confirmed non-breaking release) - an
-    # exception here just falls back to the existing wording, same as
-    # before this change.
+    # exception here falls back to the generic provider-overload wording
+    # (no raw error text leaked to the user).
     hass = _make_hass(side_effect=RuntimeError("AI Task unavailable"))
     result = run(
         _translate_changelog(
@@ -276,4 +276,4 @@ def test_normal_mode_ai_task_exception_uses_translation_failed_fallback():
             "some changelog text", "en",
         )
     )
-    assert result == "Some Integration: update available (automatic translation failed - ai_task.gemini: AI Task unavailable)."
+    assert result == "Some Integration: update available. Summary unavailable. The ai_task.gemini service appears to be temporarily unavailable (overload, etc.)."
