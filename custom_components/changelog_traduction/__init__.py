@@ -138,21 +138,25 @@ FALLBACK_STRINGS: dict[str, dict[str, str]] = {
         "notif_title": "Update: {title}",
         "no_changelog": "Update available for {title}{version} - release notes unavailable for this source.",
         "translation_failed": "{title}: update available (automatic translation failed - {reason}).",
+        "translation_failed_generic": "{title}: update available (automatic summary unavailable - translation service temporarily unavailable).",
     },
     "fr": {
         "notif_title": "Mise à jour : {title}",
         "no_changelog": "Mise à jour disponible pour {title}{version} — notes de version non disponibles pour cette source.",
         "translation_failed": "{title} : mise à jour disponible (traduction automatique indisponible — {reason}).",
+        "translation_failed_generic": "{title} : mise à jour disponible (le résumé automatique n'a pas pu être généré — service de traduction temporairement indisponible).",
     },
     "de": {
         "notif_title": "Update: {title}",
         "no_changelog": "Update verfügbar für {title}{version} - Versionshinweise für diese Quelle nicht verfügbar.",
         "translation_failed": "{title}: Update verfügbar (automatische Übersetzung fehlgeschlagen - {reason}).",
+        "translation_failed_generic": "{title}: Update verfügbar (automatische Zusammenfassung nicht möglich - Übersetzungsdienst vorübergehend nicht verfügbar).",
     },
     "es": {
         "notif_title": "Actualización: {title}",
         "no_changelog": "Actualización disponible para {title}{version}: notas de la versión no disponibles para esta fuente.",
         "translation_failed": "{title}: actualización disponible (fallo la traducción automática - {reason}).",
+        "translation_failed_generic": "{title}: actualización disponible (no se pudo generar el resumen automático - servicio de traducción no disponible temporalmente).",
     },
 }
 
@@ -825,11 +829,16 @@ async def _translate_changelog(
             version_line=version_line,
         )
     except Exception as err:  # noqa: BLE001
-        _LOGGER.warning("AI Task translation failed for %s: %s", title, err)
-        return _fallback(
-            lang, "translation_failed", title=title,
-            reason=_describe_ai_task_failure(hass, ai_task_entity, err),
+        # Full technical detail (provider name + raw error text, which can
+        # be a multi-line JSON blob for some providers) goes to the log
+        # only - the user-facing notification must stay clean and must
+        # never embed raw API/exception text (see README: "a plain
+        # 'update available' notice is sent - never invented content").
+        _LOGGER.warning(
+            "AI Task translation failed for %s: %s",
+            title, _describe_ai_task_failure(hass, ai_task_entity, err),
         )
+        return _fallback(lang, "translation_failed_generic", title=title)
 
 
 async def _deliver(
