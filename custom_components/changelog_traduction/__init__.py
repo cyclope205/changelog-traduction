@@ -138,25 +138,25 @@ FALLBACK_STRINGS: dict[str, dict[str, str]] = {
         "notif_title": "Update: {title}",
         "no_changelog": "Update available for {title}{version} - release notes unavailable for this source.",
         "translation_failed": "{title}: update available (automatic translation failed - {reason}).",
-        "translation_failed_generic": "{title}: update available (automatic summary unavailable - translation service temporarily unavailable).",
+        "translation_failed_generic": "{title}: update available. Summary unavailable. The {provider} service appears to be temporarily unavailable (overload, etc.).",
     },
     "fr": {
         "notif_title": "Mise à jour : {title}",
         "no_changelog": "Mise à jour disponible pour {title}{version} — notes de version non disponibles pour cette source.",
         "translation_failed": "{title} : mise à jour disponible (traduction automatique indisponible — {reason}).",
-        "translation_failed_generic": "{title} : mise à jour disponible (le résumé automatique n'a pas pu être généré — service de traduction temporairement indisponible).",
+        "translation_failed_generic": "{title} : mise à jour disponible. Résumé indisponible. Le service {provider} semble temporairement indisponible (surcharge, etc.).",
     },
     "de": {
         "notif_title": "Update: {title}",
         "no_changelog": "Update verfügbar für {title}{version} - Versionshinweise für diese Quelle nicht verfügbar.",
         "translation_failed": "{title}: Update verfügbar (automatische Übersetzung fehlgeschlagen - {reason}).",
-        "translation_failed_generic": "{title}: Update verfügbar (automatische Zusammenfassung nicht möglich - Übersetzungsdienst vorübergehend nicht verfügbar).",
+        "translation_failed_generic": "{title}: Update verfügbar. Zusammenfassung nicht verfügbar. Der Dienst {provider} scheint vorübergehend nicht verfügbar zu sein (Überlastung usw.).",
     },
     "es": {
         "notif_title": "Actualización: {title}",
         "no_changelog": "Actualización disponible para {title}{version}: notas de la versión no disponibles para esta fuente.",
         "translation_failed": "{title}: actualización disponible (fallo la traducción automática - {reason}).",
-        "translation_failed_generic": "{title}: actualización disponible (no se pudo generar el resumen automático - servicio de traducción no disponible temporalmente).",
+        "translation_failed_generic": "{title}: actualización disponible. Resumen no disponible. El servicio {provider} parece estar temporalmente no disponible (sobrecarga, etc.).",
     },
 }
 
@@ -608,6 +608,21 @@ async def _fetch_html_page_text(hass: HomeAssistant, url: str) -> str | None:
     return text or None
 
 
+def _ai_task_provider_name(hass: HomeAssistant, ai_task_entity: str | None) -> str:
+    """Return a human-readable name for the configured AI Task entity.
+
+    Uses the entity's own friendly name (e.g. "Google Generative AI Task")
+    when available, falling back to the raw entity_id, or "?" if no AI
+    Task entity is configured at all.
+    """
+    provider = ai_task_entity or "?"
+    if ai_task_entity:
+        state = hass.states.get(ai_task_entity)
+        if state is not None:
+            provider = state.attributes.get("friendly_name") or ai_task_entity
+    return provider
+
+
 def _describe_ai_task_failure(hass: HomeAssistant, ai_task_entity: str | None, err: Exception) -> str:
     """Build a short, human-readable reason for an AI Task failure.
 
@@ -617,11 +632,7 @@ def _describe_ai_task_failure(hass: HomeAssistant, ai_task_entity: str | None, e
     full traceback (which can be a multi-line JSON blob for some
     providers), just enough to be useful in a push notification.
     """
-    provider = ai_task_entity or "?"
-    if ai_task_entity:
-        state = hass.states.get(ai_task_entity)
-        if state is not None:
-            provider = state.attributes.get("friendly_name") or ai_task_entity
+    provider = _ai_task_provider_name(hass, ai_task_entity)
     detail = re.sub(r"\s+", " ", str(err)).strip()
     if len(detail) > 120:
         detail = detail[:117] + "..."
@@ -838,7 +849,10 @@ async def _translate_changelog(
             "AI Task translation failed for %s: %s",
             title, _describe_ai_task_failure(hass, ai_task_entity, err),
         )
-        return _fallback(lang, "translation_failed_generic", title=title)
+        return _fallback(
+            lang, "translation_failed_generic", title=title,
+            provider=_ai_task_provider_name(hass, ai_task_entity),
+        )
 
 
 async def _deliver(
