@@ -5,6 +5,8 @@ const REPOSITORIES = new Set([
   "suivi-stock-pellet",
   "programme-tnt-fr",
   "recettes-express",
+  "sidebar-shortcuts",
+  "anniversary-celebration",
 ]);
 
 // A BMC donation payload is a few hundred bytes. 100 KB leaves generous
