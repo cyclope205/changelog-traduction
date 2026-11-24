@@ -3,6 +3,8 @@ const REPOSITORIES = new Set([
   "suivi-stock-pellet",
   "programme-tnt-fr",
   "recettes-express",
+  "sidebar-shortcuts",
+  "anniversary-celebration",
 ]);
 
 module.exports = function handler(req, res) {
